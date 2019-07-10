@@ -157,21 +157,202 @@ EJERCICIO:     Desde el taxindarray:
 * rows_391_to_500 = taxi[391:501] Seleccione cada columna para las filas en los índices 391a 500inclusivo. Asignarlos a rows_391_to_500.
 * row_21_column_5 = taxi[21,5]    Seleccione el elemento en el índice de fila 21y el índice de columna 5. Asignarlo a row_21_column_5.
 
-# 
+# Selección de columnas y ndarrays de corte personalizado
+
+Continuemos aprendiendo cómo seleccionar una o más columnas de datos:
+
+* Realizar en ndarray 1D:               Metodo de lista de listas             Metodo de NumPy
+* Seleccionando una sola columna 3      sel_lol=[]                            sel_np=data_np[:,3]
+*                                       for row in data_lol:               
+*                                           col4=row[3]
+*                                           sel_lol.append(col4)
+
+* Realizar en ndarray 2D:               Metodo de lista de listas             Metodo de NumPy
+* Seleccionando multiples columnas 1,2. sel_lol=[]                            sel_np=data_np[:,1:3]
+*                                       for row in data_lol:               
+*                                           col23=row[1,3]
+*                                           sel_lol.append(col23)
 
 
+* Realizar en ndarray 2D:               Metodo de lista de listas             Metodo de NumPy
+* Seleccionando multiples columnas      sel_lol=[]                            cols = [1,3,4]
+* con especificación de columnas        for row in data_lol:                  sel_np=data_np[:,cols]
+* no consecutivas columnas 1,3.4            cols=[row[1], row[3], row[4]]
+*                                           sel_lol.append(cols)
 
+- Con una lista de listas, necesitamos usar un bucle for para extraer columnas específicas y agregarlas de nuevo a una nueva lista. Con ndarrays, el proceso es mucho más simple. Nuevamente usamos corchetes individuales con ubicaciones de filas y columnas separadas por comas, pero usamos dos puntos ( :) para las ubicaciones de las filas, lo que nos da todas las filas.
 
+- Si queremos seleccionar un segmento parcial 1D de una fila o columna, podemos combinar un solo valor para una dimensión con un sector para la otra dimensión:
 
+* Realizar en ndarray 1D:                                Metodo de lista de listas             Metodo de NumPy
+* Seleccionando la fila 2 desde la columna 1 a la 3.     sel_lol= data_lol[2],[1:4]            sel_np=data_np[2,1:4]
 
+* Realizar en ndarray 1D:                                Metodo de lista de listas             Metodo de NumPy
+* Seleccionando la columna 4 desde la fila 1 a la 4.     sel_lol= []                           sel_np=data_np[1:,4]
+*                                                        rows=data_lol[1:]
+*                                                        for r in rows:
+*                                                            col5= r[4]
+*                                                            sel_lol.append(col5)
 
+- Por último, si queremos seleccionar un sector 2D, podemos usar sectores para ambas dimensiones:
 
+* Realizar en ndarray 2D:                                 Metodo de lista de listas             Metodo de NumPy
+* Seleccionando las columnas 0,1,2 desde la fila 1 ala 3. sel_lol= []                           sel_np=data_np[1:4,:3]
+*                                                         rows=data_lol[1:4]
+*                                                         for r in rows:
+*                                                             new_row= r[:3]
+*                                                             sel_lol.append(new_row)
 
+- EJERCICIO:
+* columns_1_4_7 = taxi[:,[1,4,7]]                Seleccionar todas las filas de las columnas a índices 1, 4 y 7
+* row_99_columns_5_to_8 = taxi[99,5:9]           Seleccione las columnas en los índices 5para 8incluir para la fila en el índice 99.
+* rows_100_to_200_column_14 = taxi[100:201,14]   Seleccione las filas en los índices 100para 200incluir para la columna en el índice 14.
 
+# Vector matematica
+- Como vimos en las dos últimas pantallas, los ndarrays NumPy nos permiten seleccionar datos con mucha más facilidad. Más allá de esto, la selección que hacemos es mucho más rápida cuando se trabaja con operaciones vectorizadas porque las operaciones se aplican a múltiples puntos de datos a la vez.
 
+- Cuando hablamos por primera vez de operaciones vectorizadas, usamos el ejemplo de agregar dos columnas de datos. Con los datos en una lista de listas, tendríamos que construir un bucle for y agregar cada par de valores de cada fila individualmente:
 
+- En ese momento, solo hablamos sobre cómo las operaciones vectorizadas hacen que esto sea más rápido; sin embargo, las operaciones vectorizadas también hacen que nuestro código sea más fácil de ejecutar. Así es como realizaríamos la misma tarea anterior con operaciones vectorizadas:
 
+* # Convertir la lista de listas a un ndarray
+* my_numbers = np.array(my_numbers)
 
+* # Seleccionar cada una de las columnas el resultado de cada uno será un ndarray 1d
+* col1 = my_numbers[:,0]
+* col2 = my_numbers[:,1]
+
+* # Sumar o agregar las dos columnas
+* sums = col1 + col2
+
+- Podríamos simplificar esto aún más si quisiéramos:
+* sums = my_numbers[:,0] + my_numbers[:,1]
+- Aquí hay algunas observaciones clave sobre este código:
+* Cuando seleccionamos cada columna, usamos la sintaxis ndarray[:,c]donde cestá el índice de columna que queríamos seleccionar. Como vimos en la pantalla anterior, los dos puntos seleccionan todas las filas.
+* Para agregar los dos ndarrays 1D, col1y col2, simplemente usamos el operador de suma ( +) entre ellos.
+
+* El resultado de agregar dos ndarrays 1D es un ndarray 1D de la misma forma (o dimensiones) que el original. En este contexto, los ndarrays también pueden llamarse vectores , un término tomado de una rama de las matemáticas llamada álgebra lineal. Lo que acabamos de hacer, sumar dos vectores juntos, se llama suma de vectores.
+
+* Esto es lo que pasó detrás de las escenas: Lo que hicimos fue un 2D la dividimos en dos columnas y formamos dos 1D luego sumamos la fila 1 de la columna 1 con la fila 1 de la columna 2 y obtuvos el resultado en una sola columna.
+
+# Matemáticas vectoriales continuado
+
+- En la última pantalla, usamos la suma de vectores para agregar dos columnas, o vectores, juntos. Podemos usar cualquiera de los operadores numéricos estándar de Python con vectores, incluyendo:
+
+* vector_a + vector_b - Adición
+* vector_a - vector_b - Resta
+* vector_a * vector_b - Multiplicación (esto no está relacionado con la multiplicación de vectores utilizada en el álgebra lineal).
+* vector_a / vector_b - división
+
+- Cuando realizamos estas operaciones en dos vectores 1D, ambos vectores deben tener la misma forma.
+
+- Veamos otro ejemplo de nuestro conjunto de datos de taxi. Aquí están las primeras cinco filas de dos de las columnas en el conjunto de datos:
+
+* Distancia de viaje	       trip_length
+*        21.00	               2037.0
+*        16.29	               1520.0
+*        12.70	               1462.0
+*        8.70	                 1210.0
+*        5.56                	 759.0
+
+- Usemos estas columnas para calcular la velocidad de viaje promedio de cada viaje en millas por hora. La fórmula para calcular millas por hora es:  MILES PER HOUR = DISTANCE IN MILES / LENGTH IN HOURS
+
+* Como aprendimos en la segunda pantalla de esta misión, trip_distanceya se expresa en millas, pero trip_lengthse expresa en segundos. Primero, nos convertiremos trip_lengthen horas:
+
+* trip_distance = taxi[:,7]
+* trip_length_seconds = taxi[:,8]
+* trip_length_hours = trip_length_seconds / 3600 
+* # 3600 segundos en una hora       En este caso, dividimos cada valor en el vector por un solo número , 3600, en lugar de otro vector.
+* trip_mph = trip_distance_miles / trip_length_hours      Usa la división de vectores para dividir
+
+#  Cálculo de estadísticas para ndarrays 1D
+
+- En la última pantalla, creamos trip_mph, un ndarray 1D de la velocidad promedio de milla por hora de cada viaje en nuestro conjunto de datos. A continuación, exploraremos más estos datos y calcularemos los valores mínimo, máximo y medio para trip_mph.
+
+- Para calcular el valor mínimo de un ndarray 1D, usamos el ndarray.min()método vectorizado , así:
+* mph_min = trip_mph.min()
+* print(mph_min)           0.0
+
+- El valor mínimo en nuestro trip_mphndarray es 0.0, para un viaje que no recorre ninguna distancia. Numpy ndarrays tienen métodos para muchos cálculos diferentes. Algunos métodos clave son:
+
+* ndarray.min() para calcular el valor mínimo
+* ndarray.max() para calcular el valor máximo
+* ndarray.mean() para calcular el valor medio o medio
+* ndarray.sum() para calcular la suma de los valores
+-Puede ver la lista completa de métodos ndarray en la  https://docs.scipy.org/doc/numpy-1.14.0/reference/arrays.ndarray.html#calculation
+- Puede ver la lista completa de Python operacione: https://docs.python.org/3/library/stdtypes.html#numeric-types-int-float-complex
+* Cuando vea la sintaxis ndarray.method_name(), sustitúyala ndarraypor el nombre de su ndarray (en este caso trip_mph) como se muestra a continuación:                ndarray.method_name()   =>   trip_mph.method_name()   
+* trip_mph Usemos lo que acabamos de aprender para calcular la velocidad máxima y media (promedio) de nuestro ndarray.
+EJERCICIO:
+* mph_min = trip_mph.min()
+* mph_max = trip_mph.max()      Usa el ndarray.max()método para calcular el valor máximo de trip_mph.
+* mph_mean = trip_mph.mean()    Usa el ndarray.mean()método para calcular el valor promedio de trip_mph.
+
+#  Cálculo de estadísticas para ndarrays 1D Continuando
+
+- Al observar el resultado del código en la pantalla anterior, podemos observar:
+
+* Velocidad media (media) del viaje (redondeada): 32 mph
+* Velocidad máxima de viaje (redondeada): 82,000 mph
+* Una velocidad de viaje de 82,000 mph no es posible en el tráfico de Nueva York, ¡es casi 20 veces más rápido que el avión más rápido del mundo! Esto podría deberse a un error en los dispositivos que registran los datos, o quizás a errores cometidos en algún lugar del flujo de datos.
+
+- Antes de ver otros métodos de matriz, revisemos la diferencia entre métodos y funciones. Las funciones actúan como segmentos independientes de código que normalmente toman una entrada, realizan algún procesamiento y devuelven alguna salida. Por ejemplo, podemos usar la len()función para calcular la longitud de una lista o el número de caracteres en una cadena .
+
+* my_list = [21,14,91]
+* print(len(my_list))               3
+
+- En contraste, los métodos son funciones especiales que pertenecen a un tipo específico de objeto . Esto significa que, por ejemplo, cuando trabajamos con objetos de lista, existen funciones o métodos especiales que solo se pueden usar con listas. Por ejemplo, podemos usar el list.append()método para agregar un elemento al final de una lista. Si intentamos usar ese método en una cadena , obtendremos un error:
+* my_string.append(' is the best!')
+
+- En NumPy, a veces hay operaciones que se implementan como métodos y funciones, lo que puede ser confuso. Veamos algunos ejemplos:
+
+* Cálculo	                                          Representación de la función	            Método de representación
+* Calcular el valor mínimo de trip_mph     	        np.min(trip_mph)	                        trip_mph.min()
+* Calcular el valor máximo de trip_mph	            np.max(trip_mph)	                        trip_mph.max()
+* Calcular el valor medio promedio detrip_mph       np.mean(trip_mph)	                        trip_mph.mean()
+* Calcular el valor medio de la mediana detrip_mph	 np.median(trip_mph)                     	No hay un método de ndarray mediana.
+
+* Para recordar la terminología correcta, todo lo que comienza con np(por ejemplo, np.mean()) es una función y todo lo que se expresa con un nombre de objeto (o variable) primero (por ejemplo trip_mph.mean()) es un método. Cuando ambos existen, depende de usted decidir cuál usar, pero es mucho más común usar el enfoque del método.
+
+#  Cálculo de estadísticas para ndarrays 2D
+
+- A continuación, calcularemos estadísticas para ndarrays 2D. Si usamos el ndarray.max()método en un ndarray 2D sin ningún parámetro adicional, devolverá un solo valor, al igual que con una matriz 1D:
+
+- Pero, ¿y si quisiéramos encontrar el valor máximo de cada fila? Deberíamos usar el axis parámetro y especificar un valor de 1para indicar que queremos calcular el valor máximo para cada fila.
+
+* 2D ndarray fila tiene los datos(1,0,1,1)    ndarray.max(axis=1)   Result =1
+
+- Si queremos encontrar el valor máximo de cada columna, usaríamos un axisvalor de 0:
+* 2D ndarray columna tiene los datos(1,0,0,3)    ndarray.max(axis=0)   Result = 3
+
+- Usemos lo que hemos aprendido para verificar los datos en nuestro conjunto de datos de taxi. Para recordarnos cómo se ven los datos, veamos las primeras cinco filas de las columnas con los índices del 9 al 13:
+
+* fare_amount	    fees_amount	   tolls_amount	   tip_amount	   cantidad total
+*     52.0	         0.8	          5.54	          11.65	        69.99
+*     45.0	         1.3	          0.00	          8.00	        54.3
+*     36.5	         1.3	          0.00	          0.00	        37.8
+*     26.0         	 1.3	          0.00	          5.46	        32.76
+*     17.5	         1.3	          0.00	          0.00	        18.8
+
+- Usted puede haber notado que la suma de los cuatro primeros valores en cada fila debe ser igual al último valor, total_amount:
+Cantidad total = fare_amount + fees_amount + tolls_amount + tip_amount
+- En el próximo ejercicio, comprobaremos estos valores. Solo revisaremos las primeras cinco filas taxipara que podamos verificar más fácilmente los resultados.
+
+* # Comparemos con las primeras 5 filas
+* taxi_first_five = taxi[:5]
+
+* # select these columns: fare_amount, fees_amount, tolls_amount, tip_amount
+* fare_components = taxi_first_five[:,9:13]
+
+* # Suma las columnas de componentes   Compruebe que la suma de cada fila en fare_componentsigual al valor en la total_amountcolumna.
+* fare_sums = fare_components.sum(axis=1)   Usa el ndarray.sum()método para calcular la suma de cada fila en fare_components. Asigna el resultado a fare_sums.
+
+* # select the total_amount column       Extraer la columna 14 en taxi_first_five. Asignar a fare_totals.
+* fare_totals = taxi_first_five[:,13]
+
+* # compare the summed columns to the fare_totals
+* print(fare_totals)     Imprimir fare_totalsy fare_sums. Utilice el inspector de variables para verificar que los resultados coincidan.
+* print(fare_sums)
 
 # 2. Boolean Indexing with NumPy
 
