@@ -129,6 +129,48 @@ l__l__l__l___l
 * taxi_shape=taxi.shape       Asigna la forma de taxia taxi_shape. Imprime el resultado.
 * print(taxi_shape)
 
+ # Selección y corte de filas y elementos de ndarrays
+
+- A continuación, veamos una comparación entre trabajar con ndarrays y la lista de listas para seleccionar una o más filas de datos:
+*                                     Metodo de lista de listas             Metodo de NumPy
+* Seleccionando una sola fila 1         sel_lol=data_lol[1]                 sel_np=data_np[1]
+* Seleccionando múltiples filas 2-4     sel_lol=data_lol[2:]                sel_np=data_np[2:]
+* La misma sintaxis de lista de listas producida en ndarray 1D y 2D
+
+- Como se muestra arriba, podemos seleccionar filas en ndarrays de manera muy similar a las listas de listas. En realidad, lo que estamos viendo es una especie de atajo. Para cualquier matriz 2D, la sintaxis completa para seleccionar datos es:
+
+* ndarray[row_index,column_index]
+* #O si quieres seleccionar todo las columnas para un conjunto de filas:
+* ndarray[row_index]
+
+- Donde row_indexdefine la ubicación a lo largo del eje de fila y column_indexdefine la ubicación a lo largo del eje de columna.
+
+- Al igual que las listas, la división de matrices es desde el primer índice especificado hasta, pero sin incluir, el segundo índice especificado. Por ejemplo, para seleccionar los elementos en el índice 1, 2y 3, tendríamos que utilizar la rebanada [1:4].
+
+- Así es como seleccionamos un solo elemento de un ndarray 2D:
+*                                          Metodo de lista de listas                Metodo de NumPy
+* Selecciono 1 elemento columna3 fila2       sel_lol=data_lol[1][3]                sel_np=data_np[1,3]
+* Con una lista de listas, utilizamos dos pares separados de corchetes consecutivos. Con NumPy ndarray, usamos un solo par de corchetes con ubicaciones de filas y columnas separadas por comas.
+
+EJERCICIO:     Desde el taxindarray:
+* row_0 = taxi[0]                   Seleccione la fila en el índice 0. Asignarlo a row_0.
+* rows_391_to_500 = taxi[391:501] Seleccione cada columna para las filas en los índices 391a 500inclusivo. Asignarlos a rows_391_to_500.
+* row_21_column_5 = taxi[21,5]    Seleccione el elemento en el índice de fila 21y el índice de columna 5. Asignarlo a row_21_column_5.
+
+# 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # 2. Boolean Indexing with NumPy
