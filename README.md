@@ -421,6 +421,110 @@ Cantidad total = fare_amount + fees_amount + tolls_amount + tip_amount
 
 # Arreglos Booleanos
 
+- En la última misión, aprendimos cómo indexar, o seleccionar, datos de ndarrays. En esta misión, nos centraremos en el método más poderoso, la matriz booleana. Una matriz booleana , como su nombre indica, es una matriz de valores booleanos. Los arreglos booleanos a veces se llaman vectores booleanos o máscaras booleanas .
+
+- Puede recordar que el tipo booleano (o bool) es un tipo de Python integrado que puede ser uno de dos valores únicos:
+* True
+* False
+- También puede recordar que hemos usado valores booleanos cuando trabajamos con operadores de comparación de Python como ==(igual) >(mayor que), <(menor que), !=(no igual). A continuación hay un par de ejemplos de operaciones booleanas simples:
+Esta tabla resume las operaciones de comparación:  https://docs.python.org/3.4/library/stdtypes.html#comparisons
+
+*         Operación	           Sentido
+*            <	               estrictamente menos que
+*            <=	               menor o igual
+*            >	               estrictamente mayor que
+*            > =	             mayor que o igual
+*            ==	               igual
+*            !=	               no es igual
+*            is	               identidad de objeto
+*            is not	           identidad de objeto negado
+
+* EJEMPLO:  print(type(3.5) == float) True
+
+- Cuando exploramos las matemáticas vectoriales en la primera misión, aprendimos que una operación entre un ndarray y un solo valor da como resultado un nuevo ndarray:
+
+* print(np.array([2,4,6,8]) + 10)    [12 14 16 18]    La + 10operación se aplica a cada valor en la matriz.
+
+- Ahora, veamos qué sucede cuando realizamos una operación booleana entre un ndarray y un solo valor:
+
+* print(np.array([2,4,6,8]) < 5)    [ True  True False False]
+* Se produce un patrón similar: cada valor de la matriz se compara con cinco. Si el valor es inferior a cinco, Truese devuelve. De lo contrario, Falsese devuelve.
+
+EJERCICIO:
+* a = np.array([1, 2, 3, 4, 5])         b = np.array(["blue", "blue", "red", "blue"])    c = np.array([80.0, 103.4, 96.9, 200.3])
+* a_bool = (a < 3)              Evalúa si los elementos de la matriz ason menores que 3
+* b_bool = (b == "blue")        Evalúa si los elementos de la matriz bson iguales a "blue".
+* c_bool = (c > 100)            Evaluar si los elementos en la matriz cson mayores que 100.
+
+# Indexación booleana con ndarrays 1D
+
+- A continuación, aprenderemos cómo indexar (o seleccionar) mediante matrices booleanas, conocidas como indexación booleana. Para indexar usando nuestra nueva matriz booleana, simplemente la insertamos en los corchetes, como haríamos con nuestras otras técnicas de selección:
+
+* c = np.array([80.0, 103.4, 96.9, 200.3])    c_bool= c > 100 
+
+- La matriz booleana actúa como un filtro, de modo que los valores correspondientes a Trueformar parte del resultado y los valores correspondientes Falsese eliminan.
+
+- Usemos la indexación booleana para confirmar el número de viajes en taxi en nuestro conjunto de datos del mes de enero. Primero, seleccionemos solo la pickup_monthcolumna, que es la segunda columna en el ndarray:
+* pickup_month = taxi[:,1]
+
+- A continuación, usamos una operación booleana para hacer una matriz booleana, donde el valor 1corresponde a enero:
+* january_bool = pickup_month == 1
+
+- Luego usamos la nueva matriz booleana para seleccionar solo los elementos pickup_monthque tienen un valor de 1:
+* january = pickup_month[january_bool]
+
+- Finalmente, usamos el .shapeatributo para averiguar cuántos artículos hay en nuestro januaryndarray, que es igual a la cantidad de viajes en taxi desde el mes de enero. Usaremos [0]para extraer el valor de la tupla devuelta por .shape:
+
+* january_rides = january.shape[0]
+* print(january_rides)              13481
+* Hay 13,481 viajes en nuestro conjunto de datos desde el mes de enero. Practiquemos la indexación booleana y averigüemos la cantidad de viajes en nuestro conjunto de datos para febrero.
+
+EJERCICIO: Calcule el número de paseos en el taxindarray que son de febrero:
+
+* pickup_month = taxi[:,1]
+
+* january_bool = pickup_month == 1
+* january = pickup_month[january_bool]
+* january_rides = january.shape[0]
+* february_bool = pickup_month == 2    Cree una matriz booleana february_boolque evalúe si los elementos en pickup_monthson iguales a 2.
+* february = pickup_month[february_bool]         Usa la february_bool matriz booleana para indexar pickup_month. Asigna el resultado a february.
+* february_rides = february.shape[0]             Usa el ndarray.shape atributo para encontrar el número de elementos en february. Asigna el resultado a february_rides.
+
+# Indexación booleana con ndarrays 2D
+
+* Cuando trabaje con ndarrays 2D, puede usar la indexación booleana en combinación con cualquiera de los métodos de indexación que aprendimos en la misión anterior. La única limitación es que la matriz booleana debe tener la misma longitud que la dimensión que está indexando. 
+- Debido a que una matriz booleana no contiene información sobre cómo se creó, podemos usar una matriz booleana hecha de una sola columna de nuestra matriz para indexar toda la matriz.
+
+- Usemos lo que hemos aprendido para analizar la velocidad promedio de los viajes. En la misión anterior, calculamos que la velocidad máxima de viaje es de 82,000 mph, lo que sabemos que definitivamente no es exacto. Vamos a verificar si hay algún problema con los datos. Recordemos que calculamos la velocidad de viaje promedio de la siguiente manera:
+
+# calculate the average speed
+trip_mph = taxi[:,7] / (taxi[:,8] / 3600)
+
+- A continuación, verificaremos los viajes con una velocidad promedio superior a 20,000 mph:
+* # Crear una matriz booleana para viajes con promedio velocidades superiores a  20,000 mph
+* trip_mph_bool = trip_mph > 20000
+* # Usar la matriz booleana para seleccionar las filas para esos viajes y el  pickup_location_code, dropoff_location_code, trip_distance, y  trip_length columnas
+* trips_over_20000_mph = taxi[trip_mph_bool,5:9]
+* print(trips_over_20000_mph)
+* [[     2      2     23      1] [     2      2   19.6      1] [     2      2   16.7      2] [     3      3   17.8      2] [     2      2   17.2      2][     3      3   16.9      3][     2      2   27.1      4]]
+
+- Podemos ver en la última columna que la mayoría de estos son recorridos muy cortos, todos tienen trip_lengthvalores de 4 o menos segundos, que no concuerdan con las distancias de viaje, que son más de 16 millas.
+
+- EJERCICIO: Usemos esta técnica para examinar las filas que tienen los valores más altos para la tip_amountcolumna.
+
+* tip_amount = taxi[:,12]      
+* tip_bool = tip_amount > 50        Cree una matriz booleana tip_bool, que determina qué filas tienen valores para la tip_amountcolumna de más de 50.
+* top_tips = taxi[tip_bool, 5:14]   Utilice la tip_boolmatriz para seleccionar todas las filas taxicon valores de punta de más de 50y las columnas de los índices 5 a 13 inclusive. Asignar la matriz resultante a top_tips.
+
+# Asignando valores en ndarrays
+
+
+# Asignación utilizando matrices booleanas
+
+
+# Asignación utilizando matrices booleanas continuación
+
+#
 
 
 
