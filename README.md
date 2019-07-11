@@ -1017,12 +1017,252 @@ EJERCICIO:  Ya hemos guardado una selección de datos f500en un marco de datos l
 * Lista de artículos de la serie	                     s.loc[["item1","item7"]]	             s[["item1","item7"]]
 * Rebanada de artículos de la serie.	                 s.loc["item2":"item4"]	               s["item2":"item4"]
 
-EJERCICIO: Seleccionando datos de f500: 1. Crea una nueva variable big_movers, con: * Las filas con índices Aviva, HP, JD.com, y BHP Billiton, en ese orden. * Las columnas ranky previous_rank, en ese orden.  2. Crea una nueva variable, bottom_companiescon: * Todas las filas con índices desde National Grida AutoNation, inclusive. * El rank, sectory countrycolumnas.
+EJERCICIO: Seleccionando datos de f500: 1. Crea una nueva variable big_movers, con: * Las filas con índices Aviva, HP, JD.com, y BHP Billiton, en ese orden. * Las columnas ranky previous_rank, en ese orden.  2. Crea una nueva variable, bottom_companiescon: * Todas las filas con índices desde National Grida AutoNation, inclusive. * El rank, sectory country columnas.
 
 * big_movers = f500.loc[["Aviva", "HP", "JD.com", "BHP Billiton"], ["rank","previous_rank"]]
 * bottom_companies = f500.loc["National Grid":"AutoNation", ["rank","sector","country"]]
 
 # 4. Exploring Data with Pandas: Fundamentals
+
+# Introducción a los datos
+* En esta misión, aprenderemos otra manera en que los pandas hacen que los trabajos con datos sean más fáciles. Tiene muchos métodos y funciones incorporados para tareas comunes de exploración y análisis. A medida que aprendamos esto, también exploraremos cómo los pandas utilizan muchos de los conceptos que aprendimos en las misiones NumPy, incluidas las operaciones vectorizadas y la indexación booleana.
+
+- A continuación, usemos los métodos DataFrame.head()y DataFrame.info()para volver a familiarizarnos con los datos.
+EJERCICIO: Ya hemos leído el conjunto de datos en un marco de datos de pandas y lo hemos asignado a una variable nombrada f500.
+* f500_head = f500.head(10)         Usa el DataFrame.head()método para seleccionar las primeras 10 filas en f500.
+* f500.info()                       Utilice el DataFrame.info()método para mostrar información sobre el marco de datos.
+
+# Operaciones Vectorizadas
+
+- Debido a que los pandas están diseñados para funcionar como NumPy, se admiten muchos conceptos y métodos de Numpy. Recuerde que una de las formas en que NumPy facilita el trabajo con datos es con operaciones vectorizadas , o operaciones aplicadas a múltiples puntos de datos a la vez:
+
+- La vectorización no solo mejora el rendimiento de nuestro código, sino que también nos permite escribir código más rápidamente. Como pandas es una extensión de NumPy, también admite operaciones vectorizadas. Veamos un ejemplo de cómo funcionaría esto con una serie de pandas:
+
+* print(my_series)
+* 0    1
+* 1    2
+* 2    3
+* 3    4
+* 4    5
+* dtype: int64
+* OTRO EJEMPLO
+* my_series = my_series + 10
+* print(my_series)
+* 0    11
+* 1    12
+* 2    13
+* 3    14
+* 4    15
+* dtype: int64
+
+- Al igual que con NumPy, podemos usar cualquiera de los operadores numéricos estándar de Python con series, que incluyen:
+
+* series_a + series_b - Adición
+* series_a - series_b - Resta
+* series_a * series_b - Multiplicación (esto no está relacionado con las multiplicaciones utilizadas en el álgebra lineal).
+* series_a / series_b - división
+
+- Recuerde que nuestro f500marco de datos incluye el rango actual y el año anterior de cada compañía en la lista de Fortune 500. Usemos operaciones vectorizadas para calcular los cambios en el rango de cada compañía.
+
+- EJERCICIO: Resta los valores en la rankcolumna de los valores en la previous_rankcolumna. Asigna el resultado a rank_change.
+* rank_change =  f500["previous_rank"] - f500["rank"]
+
+# Métodos de exploración de datos en serie
+
+- En la última pantalla, restamos los valores en la rankcolumna de la previous_rankcolumna. A continuación se muestran los primeros cinco valores del resultado:
+
+* Walmart                     0
+* State Grid                  0
+* Sinopec Group               1
+* China National Petroleum   -1
+* Toyota Motor                3
+
+- Podemos observar a partir de los resultados que el Grupo Sinopec y Toyota Motor aumentaron su rango en comparación con el año anterior, mientras que China National Petroleum cayó un lugar. Sin embargo, ¿qué pasaría si quisiéramos encontrar el mayor aumento o disminución en el rango?
+
+- Al igual que NumPy, pandas admite muchos métodos de estadísticas descriptivas que pueden ayudarnos a responder estas preguntas. Éstos son algunos de los más útiles (con enlaces a la documentación):
+
+* Series.max()
+* Series.min()
+* Series.mean()
+* Series.median()
+* Series.mode()
+* Series.sum()
+
+- Veamos un ejemplo a continuación:
+* print(my_series)
+* a    0
+* b    1
+* c    2
+* d    3
+* e    4
+* dtype: int64
+* print(my_series.sum()) 10
+
+- EJERCICIO: 1. Usa el Series.max()método para encontrar el valor máximo para la rank_changeserie. Asigna el resultado a la variable rank_change_max. 2. Usa el Series.min()método para encontrar el valor mínimo para la rank_changeserie. Asigna el resultado a la variable rank_change_min. 3. Después de ejecutar su código, use el inspector de variables para ver cada una de las nuevas variables que creó.
+
+* rank_change =  f500["previous_rank"] - f500["rank"]
+* rank_change_max = rank_change.max()
+* rank_change_min = rank_change.min()
+
+# Método de descripción de la serie
+
+- En la última pantalla, usamos los métodos Series.max()y Series.min()para determinar el mayor aumento y disminución en el rango:
+* Mayor aumento en el rango: 226
+* Mayor disminución en el rango: -500
+
+- Sin embargo, de acuerdo con el diccionario de datos, esta lista solo debería clasificar a las compañías en una escala de 1 a 500. Incluso si la compañía ocupó el primer lugar en el año anterior se movió a 500 este año, el cambio de rango calculado sería -499. Esto indica que hay datos incorrectos en la rankcolumna o en la previous_rankcolumna.
+
+- A continuación, aprenderemos otro método que puede ayudarnos a investigar más rápidamente este problema: el Series.describe()método . Este método nos dice cuántos valores no nulos están contenidos en la serie, junto con la media, el mínimo, el máximo y otras estadísticas que conoceremos más adelante en esta ruta.
+
+- Veamos un ejemplo: 
+* assets = f500["assets"]
+* print(assets.describe())
+
+* count    5.000000e+02
+* mean     2.436323e+05
+* std      4.851937e+05
+* min      3.717000e+03
+* 25%      3.658850e+04
+* 50%      7.326150e+04
+* 75%      1.805640e+05
+* max      3.473238e+06
+* Name: assets, dtype: float64
+
+- Puede observar que los valores en el segmento de código anterior se ven un poco diferentes. Debido a que los valores para esta columna son demasiado largos para mostrarse con claridad, los pandas los han mostrado en notación electrónica , un tipo de notación científica :
+
+* Notación original	   Fórmula expandida	      Resultado
+*   5.000000E+02	     5.000000 * 10 ** 2	        500
+*   2.436323E+05	     2.436323 * 10 ** 5	      243632.3
+
+- Si usamos describe()en una columna que contiene valores no numéricos, obtenemos algunas estadísticas diferentes. Veamos un ejemplo:
+
+* country = f500["country"]
+* print(country.describe())
+
+* count     500
+* unique     34
+* top       USA
+* freq      132
+* Name: country, dtype: object
+
+- La primera estadística,, countes la misma que para las columnas numéricas, que nos muestra el número de valores no nulos. Las otras tres estadísticas son nuevas:
+
+* unique: Número de valores únicos en la serie. En este caso, nos dice que hay 34 países diferentes representados en Fortune 500.
+* top: Valor más común en la serie. Estados Unidos es el país que tiene la sede de la mayoría de las compañías Fortune 500
+* freq: Frecuencia del valor más común. Exactamente 132 compañías de Fortune 500 tienen su sede en los Estados Unidos.
+
+EJERCICIO: Vamos a utilizar este método para recopilar más información sobre la serie ranky previous_rank.
+
+1. Devuelve una serie de estadísticas descriptivas para la rankcolumna en f500. * Seleccione la rankcolumna. Asígnele a una variable nombrada rank. * Utilice el Series.describe()método para devolver una serie de estadísticas para rank. Asigna el resultado a rank_desc.
+2. Devuelve una serie de estadísticas descriptivas para la previous_rankcolumna en f500. * Seleccione la previous_rankcolumna. Asígnele a una variable nombrada prev_rank. * Utilice el Series.describe()método para devolver una serie de estadísticas para prev_rank. Asigna el resultado a prev_rank_desc. 3. Después de ejecutar su código, use el inspector de variables para ver cada una de las nuevas variables que creó. Intente identificar cualquier problema potencial con los datos antes de pasar a la siguiente pantalla.
+
+* rank = f500["rank"]
+* rank_desc = rank.describe()
+* prev_rank = f500["previous_rank"]
+* prev_rank_desc = prev_rank.describe()
+
+# Método de Encadenamiento
+
+- En el último ejercicio, utilizamos el Series.describe()método para explorar las columnas ranky previous_rank. Cuando revisó los resultados, es posible que haya notado algo extraño: el valor mínimo para la previous_rankcolumna es 0:
+
+* prev_rank = f500["previous_rank"]
+* print(prev_rank.describe())
+* count    500.000000
+* mean     222.134000
+* std      146.941961
+* min        0.000000
+* 25%       92.750000
+* 50%      219.500000
+* 75%      347.250000
+* max      500.000000
+* Name: previous_rank, dtype: float64
+
+- Sin embargo, esta columna solo debe tener valores entre 1 y 500 (inclusive), por lo que un valor 0no tiene sentido. Para investigar la posible causa de este problema, confirmemos el número de 0valores que aparecen en la previous_rankcolumna.
+
+- Recuerde que en la última misión, aprendimos a usar el Series.value_counts()método para mostrar los conteos de los valores únicos en una columna:
+
+* countries = f500["country"]
+* countries_counts = countries.value_counts()
+
+- En lugar de asignar la countriesserie a su propia variable, podemos omitir ese paso y usar el método directamente en el resultado de la selección de la columna:
+
+* countries_counts = f500["country"].value_counts()
+
+- Esto se denomina encadenamiento de métodos : una forma de combinar varios métodos en una sola línea.
+
+En la última misión, también aprendimos a usar Series.loc[]para seleccionar solo un elemento de una serie por etiqueta. Por ejemplo, para seleccionar solo los recuentos China, usaríamos la siguiente línea de código:
+
+* print(f500["country"].value_counts().loc["China"]) 109
+
+- Desde aquí, verás el método de encadenamiento más a menudo en nuestras misiones. Al escribir el código, siempre evalúe si el encadenamiento de métodos hará que su código sea más difícil de leer. Si lo hace, siempre es preferible dividir el código en más de una línea.
+
+- EJERCICIO: Usemos el Series.value_counts()método y a Series.loccontinuación para confirmar el número de 0valores en la previous_rankcolumna.  
+- 1. Utilice Series.value_counts()y Series.locpara devolver el número de compañías con un valor de 0en la previous_rankcolumna en el f500marco de datos. Asigna los resultados a zero_previous_rank. 2. Después de ejecutar su código, use el inspector de variables para ver cada una de las nuevas variables que creó.
+
+* zero_previous_rank = f500["previous_rank"].value_counts().loc[0]
+
+#  Métodos de exploración de marco de datos
+
+- En el último ejercicio, confirmamos que 33 empresas en el marco de datos tienen un valor de 0en la previous_rankcolumna. Dado que varias compañías tienen un 0rango, podemos concluir que estas compañías no tenían un rango en absoluto para el año anterior. Tendría más sentido para nosotros reemplazar estos valores con un valor nulo.
+
+- Antes de corregir estos valores, exploremos el resto de nuestro marco de datos para asegurarnos de que no haya otros problemas de datos. Al igual que usamos métodos de estadísticas descriptivas para explorar series individuales, también podemos usar métodos de estadísticas descriptivas para explorar nuestro f500marco de datos.
+
+- Dado que las series y los marcos de datos son dos objetos distintos, tienen sus propios métodos únicos. Sin embargo, hay muchas veces en que los objetos de serie y de marco de datos tienen un método del mismo nombre que se comporta de manera similar. A continuación se presentan algunos ejemplos:
+
+* Series.max() y DataFrame.max()
+* Series.min() y DataFrame.min()
+* Series.mean() y DataFrame.mean()
+* Series.median() y DataFrame.median()
+* Series.mode() y DataFrame.mode()
+* Series.sum() y DataFrame.sum()
+
+- A diferencia de sus homólogos de serie, los métodos de marco de datos requieren un parámetro de eje para que sepamos qué eje se debe calcular. Si bien puede usar números enteros para referirse al primer y segundo ejes, los métodos de marco de datos de pandas también aceptan las cadenas "index"y "columns"para el parámetro de eje:
+
+- Por ejemplo, si quisiéramos encontrar el valor mediano (medio) para las columnas revenuesy profits, podríamos usar el siguiente código:
+
+* medians = f500[["revenues", "profits"]].median(axis=0)
+* # También podemos usar .median(axis="index")
+* print(medians)
+* revenues    40236.0
+* profits      1761.6
+* dtype: float64
+
+- De hecho, el valor predeterminado para el parámetro de eje con estos métodos es axis=0. ¡Podríamos haber usado el median()método sin un parámetro para obtener el mismo resultado!
+
+- En este próximo ejercicio, le pediremos que consulte la documentación de uno de los métodos anteriores para completar la tarea. Aunque puede parecer intimidante al principio, es muy importante familiarizarse con la documentación, ¡es imposible memorizar todo en la biblioteca de pandas!
+
+EJERCICIO: Utilice el DataFrame.max()método para encontrar el valor máximo solo para las columnas numéricas de f500(es posible que deba verificar la documentación). Asigna el resultado a la variable max_f500.
+
+* max_f500 = f500.max(numeric_only=True)
+
+# Método de descripción de marco de datos o DataFrame
+
+- En el último ejercicio, usamos el DataFrame.max()método para devolver el máximo para todas las columnas numéricas en f500:
+
+* f500.max(numeric_only=True)
+* rank                            500.0
+* revenues                     485873.0
+* revenue_change                  442.3
+* profits                       45687.0
+* assets                      3473238.0
+* profit_change                  8909.5
+* previous_rank                   500.0
+* years_on_global_500_list         23.0
+* employees                   2300000.0
+* total_stockholder_equity     301893.0
+* 
+dtype: float64
+
+
+
+
+
+
+
+
+
+
+
 
 # 5. Exploring Data with Pandas: Intermediate
 
