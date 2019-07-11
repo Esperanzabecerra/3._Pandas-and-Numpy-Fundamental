@@ -608,9 +608,55 @@ La sintaxis de pseudocódigo para este código es la siguiente, primero utilizan
 * taxi_modified[taxi_modified[:, 5] == 3, 15] = 1            Para las filas en las que el valor del índice de columna 5es igual a 3(Aeropuerto de LaGuardia), asigne el valor 1al índice de columna 15.
 * taxi_modified[taxi_modified[:, 5] == 5, 15] = 1            Para las filas donde el valor del índice de columna 5es igual a 5(Aeropuerto de Newark), asigne el valor 1al índice de columna 15.
  
-#
+# Desafío: ¿Cuál es el aeropuerto más popular?
 
+- Los desafíos están diseñados para ayudarte a practicar las técnicas que has aprendido en esta misión. Le brindamos varios consejos para ayudarlo, pero primero intente completar el desafío sin los consejos, si puede. No se desanime si estos pasos desafiantes intentan hacer un buen trabajo, ¡trabajar con datos es un proceso iterativo!
 
+- En este desafío, queremos averiguar qué aeropuerto es el destino más popular en nuestro conjunto de datos. Para hacerlo, usaremos la indexación booleana para crear tres matrices filtradas y luego veremos cuántas filas hay en cada matriz.
+
+- Para completar esta tarea, necesitaremos verificar si la dropoff_location_codecolumna (índice de columna 6) es igual a uno de los siguientes valores:
+
+* 2: JFK Aeropuerto
+* 3: LaGuardia Airport
+* 5: Aeropuerto de Newark.
+
+EJERCICIO:
+1. Usando el taxindarray original , calcule cuántos viajes tuvo el Aeropuerto JFK como destino: Use la indexación booleana para seleccionar solo las filas donde la dropoff_location_codecolumna (índice de columna 6) tiene un valor que corresponde a JFK. Asigna el resultado a jfk. Calcule cuántas filas hay en la nueva jfkmatriz y asigne el resultado a jfk_count.
+2. Calcule cuántos viajes desde el taxiaeropuerto de Laguardia tenían como destino: Utilice la indexación booleana para seleccionar solo las filas donde la dropoff_location_codecolumna (índice de columna 6) tiene un valor que corresponde a Laguardia. Asigna el resultado a laguardia. Calcule cuántas filas hay en la nueva laguardiamatriz. Asigna el resultado a laguardia_count.
+3. Calcule cuántos viajes de taxi tenían como destino el Aeropuerto de Newark:
+Seleccione solo las filas donde la dropoff_location_codecolumna tiene un valor que corresponde a Newark y asigne el resultado a newark.
+4. Calcule cuántas filas hay en la nueva newarkmatriz y asigne el resultado a newark_count. Después de ejecutar el código, inspeccionar los valores de jfk_count, laguardia_county newark_countpara ver qué aeropuerto tiene la mayoría de bajadas.
+
+* jfk = taxi[taxi[:,6] == 2]    
+* jfk_count = jfk.shape[0]
+
+* laguardia = taxi[taxi[:,6] == 3]
+* laguardia_count = laguardia.shape[0]
+
+* newark = taxi[taxi[:,6] == 5]
+* newark_count = newark.shape[0]
+
+# Desafío: Calcular estadísticas para viajes en datos limpios
+
+- Nuestros cálculos en la pantalla anterior muestran que Laguardia es el aeropuerto más común para las devoluciones en nuestro conjunto de datos.
+- Nuestro segundo y último desafío consiste en eliminar los datos potencialmente malos de nuestro conjunto de datos y luego calcular algunas estadísticas descriptivas sobre los datos "limpios" restantes.
+
+- Comenzaremos utilizando la indexación booleana para eliminar cualquier fila que tenga una velocidad promedio para el viaje de más de 100 mph (160 kph), lo que debería eliminar los datos cuestionables con los que hemos trabajado en las últimas dos misiones. Luego, usaremos métodos de matriz para calcular la media de columnas específicas de los datos restantes. Las columnas que nos interesan son:
+
+* trip_distance, en el índice de la columna 7
+* trip_length, en el índice de la columna 8
+* total_amount, en el índice de la columna 13
+
+EJERCICIO: El trip_mphn darray se ha proporcionado para usted.
+1. Cree un nuevo ndarray, que cleaned_taxicontenga solo filas para las cuales los valores trip_mphsean menores que 100.
+2. Calcula la media de la trip_distancecolumna de cleaned_taxi. Asigna el resultado a mean_distance.
+3. Calcula la media de la trip_lengthcolumna de cleaned_taxi. Asigna el resultado a mean_length.
+4. Calcula la media de la total_amountcolumna de cleaned_taxi. Asigna el resultado a mean_total_amount.
+* trip_mph = taxi[:,7] / (taxi[:,8] / 3600)
+* cleaned_taxi = taxi[trip_mph < 100]
+* mean_distance = cleaned_taxi[:,7].mean()
+* mean_length = cleaned_taxi[:,8].mean()
+* mean_total_amount = cleaned_taxi[:,13].mean()
 
 
 
