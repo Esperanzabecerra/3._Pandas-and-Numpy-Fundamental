@@ -658,11 +658,219 @@ EJERCICIO: El trip_mphn darray se ha proporcionado para usted.
 * mean_length = cleaned_taxi[:,8].mean()
 * mean_total_amount = cleaned_taxi[:,13].mean()
 
-
-
-
-
 # 3. Introduction to Pandas
+
+# Entendiendo Pandas y NumPy
+- En las últimas dos misiones, exploramos cómo la biblioteca NumPy facilita el trabajo con datos. Debido a que podemos trabajar fácilmente en múltiples dimensiones, nuestro código es mucho más fácil de entender. Al utilizar operaciones vectorizadas en lugar de bucles, nuestro código se ejecuta más rápido con datos más grandes.
+
+- Aunque NumPy proporciona estructuras y herramientas fundamentales que facilitan el trabajo con datos, hay varias cosas que limitan su utilidad:
+
+* La falta de soporte para los nombres de columnas nos obliga a encuadrar preguntas como operaciones de matrices multidimensionales.
+* El soporte para un solo tipo de datos por ndarray hace que sea más difícil trabajar con datos que contienen datos numéricos y de cadena.
+* Hay muchos métodos de bajo nivel, pero hay muchos patrones de análisis comunes que no tienen métodos precompilados.
+
+- La biblioteca de pandas proporciona soluciones a todos estos puntos de dolor y más. Pandas no es tanto un reemplazo para NumPy como una extensión de NumPy. El código subyacente para pandas usa la biblioteca NumPy ampliamente, lo que significa que los conceptos que has estado aprendiendo te serán útiles a medida que comiences a aprender más sobre pandas.
+
+- La estructura de datos primaria en pandas se llama un marco de datos . Los marcos de datos son el equivalente de los pandas de un ndarray Numpy 2D, con algunas diferencias clave:
+
+* Los valores de los ejes pueden tener etiquetas de cadena , no solo las numéricas.
+* Los marcos de datos pueden contener columnas con varios tipos de datos : incluidos enteros, flotantes (decimales) y cadenas(nombres como Japo, China).
+
+# Introducción a los datos
+
+- A medida que aprendemos pandas, trabajaremos con un conjunto de datos de la lista Global 500 de la revista Fortune , que clasifica a las 500 corporaciones más importantes del mundo por ingresos. El conjunto de datos fue compilado originalmente aquí ; sin embargo, modificamos el conjunto de datos original para hacerlo más accesible.  https://data.world/chasewillden/fortune-500-companies-2017
+
+- El conjunto de datos es un archivo CSV llamado f500.csv. Aquí hay un diccionario de datos para algunas de las columnas en el CSV:
+
+* company: Nombre de la compania.
+* rank: Rango global 500 para la empresa.
+* revenues: Ingresos totales de la compañía para el año fiscal, en millones de dólares (USD).
+* revenue_change: Cambio porcentual en los ingresos entre el año fiscal actual y el anterior.
+* profits: Utilidad neta del ejercicio, en millones de dólares (USD).
+* ceo: Director Ejecutivo de la compañía.
+* industry: Industria en la que opera la empresa.
+* sector: Sector en el que opera la empresa.
+* previous_rank: Rango global de 500 para la compañía para el año anterior.
+* country: País en el que tiene su sede la empresa.
+
+- Similar a la convención de importación para NumPy ( import numpy as np), la convención de importación para pandas es:
+
+* import pandas as pd
+
+- En el script.pyeditor de código para esta pantalla, ya hemos importado pandas y utilizamos la pandas.read_csv()función para leer el CSV en un marco de datos y asignarlo al nombre de la variable f500. Aprenderemos read_csv()más adelante en este curso, pero por ahora, todo lo que necesita saber es que maneja automáticamente la lectura y el análisis de la mayoría de los archivos CSV.
+
+- Al igual que las ndarrays de NumPy, los marcos de datos de los pandas tienen un .shapeatributo que devuelve una tupla que representa las dimensiones de cada eje del objeto. Usaremos eso y Python's type() functionpara inspeccionar el f500marco de datos.
+
+- EJERCICIO: 1. Utilice la type()función de Python para asignar el tipo de f500a f500_type. 2. Usa el DataFrame.shapeatributo para asignar la forma de f500a f500_shape. 3. Después de ejecutar el código, utilice la variable inspector de mirar las variables f500, f500_typey f500_shape.    f500_typetipo ( <clase 'tipo'> )  pandas.core.frame.DataFrame  f500_shapetupla ( <clase 'tupla'> ) (500, 16)
+* import pandas as pd
+* f500 = pd.read_csv('f500.csv',index_col=0)
+* f500.index.name = None
+* f500_type = type(f500)
+f500_shape = f500.shape
+
+ # Introduciendo DataFrames
+
+- El código que escribimos en la pantalla anterior nos permite saber que nuestros datos tienen 500 filas y 16 columnas, y se almacenan como una estructura de datos primaria, pandas.core.frame.DataFrame objecto simplemente un marco de datos.
+
+- Recuerde que una de las características que mejoran los pandas para trabajar con datos es su compatibilidad con las columnas de cadena y las etiquetas de fila:
+
+* Los valores de los ejes pueden tener etiquetas de cadena, no solo las numéricas .
+* Los marcos de datos pueden contener columnas con varios tipos de datos: incluidos enteros, flotantes y cadenas.
+
+- Vamos a verificar esto a continuación. Para ver las primeras filas de nuestro marco de datos, podemos usar el DataFrame.head()método . Por defecto, devolverá las primeras cinco filas de nuestro marco de datos. Sin embargo, también acepta un parámetro entero opcional, que especifica el número de filas:    
+* f500.head(3)
+
+- Del mismo modo, podemos usar el DataFrame.tail()método para mostrarnos las últimas filas de nuestro marco de datos:
+* f500.tail(3)
+
+EJERCICIO: Al igual que en las misiones anteriores, la f500variable que creamos en la pantalla anterior está disponible aquí.
+* f500_head = f500.head(6)   Usa el head()método para seleccionar las primeras 6 filas . Asigna el resultado a f500_head. CABEZA=HEAD
+* f500_tail = f500.tail(8)   Usa el tail()método para seleccionar las últimas 8 filas . Asigna el resultado a f500_tail. COLA=TAIL
+
+ # Introduciendo DataFrames Continuación
+ 
+- Otra característica que hace que los pandas sean mejores para trabajar con datos es que los marcos de datos pueden contener más de un tipo de datos:
+
+* Los valores de los ejes pueden tener etiquetas de cadena, no solo numéricas
+* Los marcos de datos pueden contener columnas con varios tipos de datos: incluidos enteros, flotantes y cadenas.
+
+- Podemos usar el DataFrame.dtypesatributo (similar al ndarray.dtypeatributo de NumPy ) para devolver información sobre los tipos de cada columna. Veamos un ejemplo usando una selección de datos almacenados usando el nombre de la variable f500_selection.
+
+* print(f500_selection.dtypes)
+* rank          int64
+* revenues      int64
+* profits     float64
+* country      object
+* dtype: object
+
+- Podemos ver tres tipos de datos diferentes, o dtypes .
+
+- Puede reconocer el float64tipo de letra de nuestro trabajo en NumPy. Pandas usa dtypes NumPy para columnas numéricas, incluyendo integer64. También hay un tipo que no hemos visto antes, objectque se usa para las columnas que tienen datos que no encajan en ningún otro tipo de dtypes. Esto casi siempre se usa para columnas que contienen valores de cadena.
+
+- Cuando importamos datos, los pandas intentarán adivinar el tipo de letra correcto para cada columna. En general, los pandas hacen un buen trabajo con esto, lo que significa que no debemos preocuparnos por especificar tipos de datos cada vez que comenzamos a trabajar con datos.
+
+- Si quisiéramos una descripción general de todos los tipos de datos utilizados en nuestro marco de datos, junto con su forma y otra información, podríamos usar el DataFrame.info()método . Tenga en cuenta que DataFrame.info()imprime la información, en lugar de devolverla, por lo que no podemos asignarla a una variable.
+
+EJERCICIO:  Utilice el DataFrame.info()método para mostrar información sobre el f500marco de datos.   * f500.info()
+
+# Seleccionando una columna de un DataFrame por etiqueta
+
+- En el último ejercicio, usamos el DataFrame.info()método para mostrarnos el número de entradas en nuestro índice (que representa el número de filas), una lista de cada columna con su dtype y el número de valores no nulos, así como un resumen de Los diferentes tipos de datos y uso de memoria.
+
+- Debido a que nuestros ejes en pandas tienen etiquetas, podemos seleccionar datos utilizando esas etiquetas, a diferencia de NumPy, donde necesitábamos saber la ubicación exacta del índice. Para ello, podemos utilizar el DataFrame.loc[]método . La sintaxis del DataFrame.loc[]método es:
+
+* df.loc[row_label, column_label]
+
+- Tenga en cuenta que usamos paréntesis ( []) en lugar de paréntesis ( ()) cuando seleccionamos por ubicación.
+
+- A lo largo de nuestras misiones pandas, verás que se dfusa en ejemplos de código como una abreviatura para un objeto de marco de datos. Utilizamos esta convención porque también se usa ampliamente en la documentación oficial de los pandas; es importante acostumbrarse a leerla.
+
+- Veamos un ejemplo a continuación. Volveremos a trabajar con solo una selección de datos almacenados como * f500_selection : Seleccionemos una sola columna especificando una sola etiqueta :
+
+* f500_selection.loc[:,"rank"] Estoy seleccionando una columna espepecifica de un conjunto de datos
+* Observe que usamos :para especificar que deseamos seleccionar todas las filas. También tenga en cuenta que el nuevo marco de datos tiene las mismas etiquetas de fila que el original.
+
+- También podemos usar el siguiente método abreviado para seleccionar una sola columna:
+
+* rank_col = f500_selection["rank"]
+* print(rank_col)
+* Walmart                     1
+* State Grid                  2
+* Sinopec Group               3
+* China National Petroleum    4
+* Toyota Motor                5
+* Name: rank, dtype: int64
+
+- Este estilo de selección de columnas es muy común. Lo utilizaremos a lo largo de nuestras misiones Dataquest.
+
+EJERCICIO: Practiquemos el uso de esta técnica para seleccionar una columna específica de nuestro f500marco de datos.
+
+* industries = f500["industry"]         Seleccione la industrycolumna. Asigne el resultado al nombre de la variable industries.
+* industries_type = type(industries)    Utilice la type()función de Python para asignar el tipo de industriesa industries_type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # 4. Exploring Data with Pandas: Fundamentals
 
