@@ -336,8 +336,10 @@ EJERCICIO:
 
 - Usted puede haber notado que la suma de los cuatro primeros valores en cada fila debe ser igual al último valor, total_amount:
 Cantidad total = fare_amount + fees_amount + tolls_amount + tip_amount
+
 - En el próximo ejercicio, comprobaremos estos valores. Solo revisaremos las primeras cinco filas taxipara que podamos verificar más fácilmente los resultados.
 
+- EJERCICIO:
 * # Comparemos con las primeras 5 filas
 * taxi_first_five = taxi[:5]
 
@@ -355,6 +357,76 @@ Cantidad total = fare_amount + fees_amount + tolls_amount + tip_amount
 * print(fare_sums)
 
 # 2. Boolean Indexing with NumPy
+
+# Leyendo archivos CSV con NumPy
+
+- Sin embargo, ¿qué pasaría si también quisiéramos averiguar cuántos viajes se realizaron en cada mes? ¿O cuál aeropuerto es el más ocupado? Para ello, aprenderemos una nueva técnica: la indexación booleana . Antes de sumergirnos en qué es la indexación booleana y cómo puede ayudarnos, volvamos a familiarizarnos con nuestros datos.
+
+- A continuación hay información sobre las columnas seleccionadas del conjunto de datos:
+
+* pickup_year: El año del viaje.
+* pickup_month: El mes del viaje (enero es 1, diciembre es 12).
+* pickup_day: El día del mes del viaje.
+* pickup_location_code: El aeropuerto o barrio donde comenzó el viaje.
+* dropoff_location_code: El aeropuerto o barrio donde terminó el viaje.
+* trip_distance: La distancia del viaje en millas.
+* trip_length: La duración del viaje en segundos.
+* fare_amount: La tarifa base del viaje, en dólares.
+* total_amount: El monto total cobrado al pasajero, incluidas todas las tarifas, peajes y propinas.
+
+- Puede encontrar información sobre todas las columnas en el diccionario de datos. https://s3.amazonaws.com/dq-content/290/nyc_taxi_data_dictionary.md
+
+- Ahora que entendemos un poco mejor a NumPy, aprendamos a usar la numpy.genfromtxt()función para leer archivos en ndarrays NumPy. Aquí está la sintaxis simplificada para la función, y una explicación de los dos parámetros:
+
+* np.genfromtxt(filename, delimiter=None)
+
+* filename: Un argumento posicional, generalmente una cadena que representa la ruta al archivo de texto que se leerá.
+* delimiter: Un argumento con nombre, que especifica la cadena utilizada para separar cada valor.
+* En este caso, como tenemos un archivo CSV, el delimitador es una coma. Así es como leímos en un archivo llamado data.csv:
+* data = np.genfromtxt('data.csv', delimiter=',')
+
+- EJERCICIO: Vamos a leer nuestro nyc_taxis.csvarchivo en NumPy siguiente.
+
+* import numpy as np                                        Importe la biblioteca NumPy y asigne al alias np.
+* taxi = np.genfromtxt('nyc_taxis.csv', delimiter=',')      Utilice la numpy.genfromtxt()función para leer el nyc_taxis.csvarchivo en NumPy. Asigna el resultado a taxi.
+* taxi_shape = taxi.shape                                   Usa el ndarray.shapeatributo para asignar la forma de taxia taxi_shape.
+
+# Leyendo archivos CSV con NumPy continua
+
+- Es posible que no hayas notado en la última misión que convertimos todos los valores a flotantes antes de convertir la lista de listas en un ndarray. Esto se debe a que las ndarrays NumPy solo pueden contener un tipo de datos .
+
+- No tuvimos que completar este paso en la última ejecución, porque cuando se numpy.genfromtxt()lee en un archivo, intenta determinar el tipo de datos del archivo mirando los valores.
+
+- Podemos usar el ndarray.dtypeatributo para ver el tipo de datos interno que se ha utilizado.
+* print(taxi.dtype)  float64
+
+- NumPy eligió el float64tipo, ya que permitirá leer la mayoría de los valores de nuestro CSV. Puede pensar que el float64tipo de NumPy es idéntico al floattipo de Python (el "64" se refiere al número de bits utilizados para almacenar el valor subyacente).
+
+- Si se revisan los resultados del último ejercicio, podemos ver que taxicontiene casi todos los números excepto por un valor que no hemos visto antes: nan.
+
+* [[   nan    nan    nan ...,    nan    nan    nan] [  2016      1      1 ...,  11.65  69.99      1][  2016      1      1 ...,      8   54.3      1]..., [  2016      6     30 ...,      5  63.34      1][  2016      6     30 ...,   8.95  44.75      1] [  2016      6     30 ...,      0  54.84      2]]
+
+- NaN es un acrónimo de No es un número ; significa literalmente que el valor no se puede almacenar como un número. Es similar a (y a menudo se lo denomina a) un valor nulo, como la Noneconstante de Python .
+
+- NaN se ve con más frecuencia cuando falta un valor, pero en este caso, tenemos valores de NaN porque la primera línea de nuestro archivo CSV contiene los nombres de cada columna. NumPy no puede convertir valores de cadena como pickup_yearen el float64tipo de datos.
+
+- Por ahora, necesitamos eliminar esta fila de encabezado de nuestro ndarray. Podemos hacerlo de la misma manera que lo haríamos si nuestros datos se almacenaran en una lista de listas:
+
+* taxi = taxi[1:]
+
+* Alternativamente, podemos pasar un parámetro adicional,, skip_headera la numpy.genfromtxt()función. El skip_headerparámetro acepta un número entero, el número de filas desde el inicio del archivo a omitir. Tenga en cuenta que debido a que este número entero debe ser el número de filas y no el índice, omitir la primera fila requeriría un valor de 1, no 0.
+- EJERCICIO:
+* taxi= np.genfromtxt('nyc_taxis.csv', delimiter=',', skip_header=1)       Utilice la numpy.genfromtxt()función para volver a leer el nyc_taxis.csvarchivo en NumPy, pero esta vez, omita la primera fila. Asigna el resultado a taxi.
+* taxi_shape = taxi.shape                                                  Asigna la forma de taxia taxi_shape.
+
+# Arreglos Booleanos
+
+
+
+
+
+
+
 
 # 3. Introduction to Pandas
 
