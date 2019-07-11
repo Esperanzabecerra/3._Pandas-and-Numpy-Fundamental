@@ -517,13 +517,97 @@ trip_mph = taxi[:,7] / (taxi[:,8] / 3600)
 * top_tips = taxi[tip_bool, 5:14]   Utilice la tip_boolmatriz para seleccionar todas las filas taxicon valores de punta de más de 50y las columnas de los índices 5 a 13 inclusive. Asignar la matriz resultante a top_tips.
 
 # Asignando valores en ndarrays
+- A continuación, usaremos las mismas técnicas de indexación que ya hemos aprendido para modificar valores dentro de una ndarray. La sintaxis que usaremos (en pseudocódigo) es:
 
+* ndarray[location_of_values] = new_value
+
+- Echemos un vistazo a lo que parece en el código real. Con nuestra matriz 1D, podemos especificar una ubicación de índice específica:
+* a = np.array(['red','blue','black','blue','purple'])
+* a[0] = 'orange'
+* print(a)             ['orange', 'blue', 'black', 'blue', 'purple']
+
+- O podemos asignar múltiples valores a la vez:
+* a[3:] = 'pink'
+* print(a)             ['orange', 'blue', 'black', 'pink', 'pink']
+
+- Con un ndarray 2D, al igual que con un ndarray 1D, podemos asignar una ubicación de índice específica:
+* ones = np.array([[1, 1, 1, 1, 1],
+*                 [1, 1, 1, 1, 1],
+*                 [1, 1, 1, 1, 1]])
+* ones[1,2] = 99
+* print(ones)   [[ 1,  1,  1,  1,  1],
+*  [ 1,  1, 99,  1,  1],
+*  [ 1,  1,  1,  1,  1]]
+
+- También podemos asignar una fila entera ...
+* ones[0] = 42
+* print(ones)     [[42, 42, 42, 42, 42], [ 1,  1, 99,  1,  1], [ 1,  1,  1,  1,  1]]
+
+- ... o una columna entera:
+* ones[:,2] = 0
+* print(ones)    [[42, 42, 0, 42, 42], [ 1,  1, 0,  1,  1], [ 1,  1, 0,  1,  1]]
+
+- EJERCICIO: Practiquemos una asignación de matriz con nuestro conjunto de datos de taxi.  Para ayudarlo a practicar sin hacer cambios a nuestra matriz original, hemos utilizado el ndarray.copy()método para hacer taxi_modifieduna copia de nuestro original para estos ejercicios.
+
+* # Esto crea una copia de nuestro taxi ndarray
+* taxi_modified = taxi.copy()
+* taxi_modified[28214,5] = 1                                   El valor en el índice de columna 5(pickup_location) del índice de fila 28214es incorrecto. Use la asignación para cambiar este valor a 1en el taxi_modifiedndarray.
+* taxi_modified[:,0] = 16                                      La primera columna (índice 0) contiene valores de año como números de cuatro dígitos en el formato AAAA ( 2016ya que todos los viajes en nuestro conjunto de datos son de 2016). Use la asignación para cambiar estos valores al formato YY ( 16) en el taxi_modifiedndarray.
+* taxi_modified[1800:1802,7] = taxi_modified[:,7].mean()       Los valores en el índice de columna 7(trip_distance) del índice de filas 1800y 1801son incorrectos. Use la asignación para cambiar estos valores en el taxi_modifiedndarray al valor medio para esa columna.
 
 # Asignación utilizando matrices booleanas
 
+- Los arreglos booleanos se vuelven muy poderosos cuando los usamos para la asignación. Veamos un ejemplo:
+* a2 = np.array([1, 2, 3, 4, 5])
+* a2_bool = a2 > 2
+* a2[a2_bool] = 99
+* print(a2)       [ 1  2 99 99 99]
+
+- La matriz booleana controla los valores a los que se aplica la asignación, y los otros valores permanecen sin cambios. Veamos cómo funciona este código:
+
+* a = np.array([1, 2, 3, 4, 5])
+* a[a > 2] = 99 
+
+- Observe en el diagrama anterior que usamos un "atajo": insertamos la definición de la matriz booleana directamente en la selección. Este "atajo" es la forma convencional de escribir la indexación booleana. Hasta ahora, hemos estado asignando una variable intermedia primero para que el proceso sea claro, pero de aquí en adelante, usaremos este método de "acceso directo" en su lugar.
+
+- EJERCICIO: Nuevamente usamos el ndarray.copy()método para hacer taxi_copyuna copia de nuestro original para este ejercicio.
+* # Esto crea una copia de nuestro taxi ndarray
+* taxi_copy = taxi.copy()
+* total_amount = taxi_copy[:,13]           Seleccione la decimocuarta columna (índice 13) en taxi_copy. Asígnele a una variable nombrada total_amount.
+* total_amount[total_amount < 0] = 0       Para las filas donde el valor de total_amountes menor que 0, use la asignación para cambiar el valor a 0.
 
 # Asignación utilizando matrices booleanas continuación
 
+- A continuación, veremos un ejemplo de asignación utilizando una matriz booleana con dos dimensiones:
+
+* b = np_array([[1, 2, 3],[4 , 5, 6],[7, 8, 9]])
+* b[b > 4 ] = 99
+
+- La b > 4 operación booleana produce una matriz booleana 2D que luego controla los valores a los que se aplica la asignación. También podemos usar una matriz booleana 1D para realizar la asignación en una matriz 2D:
+
+- La c[:,1] > 2 operación booleana compara solo los valores de una columna y produce una matriz booleana 1D. Luego usamos esa matriz booleana como el índice de la fila para la asignación, y 1como el índice de la columna para especificar la segunda columna. Nuestra matriz booleana solo se aplica a la segunda columna, mientras que todos los demás valores permanecen sin cambios.
+
+La sintaxis de pseudocódigo para este código es la siguiente, primero utilizando una variable intermedia:
+
+* bool = array[:, column_for_comparison] == value_for_comparison
+* array[bool, column_for_assignment] = new_value
+
+- y luego todo en una línea:
+
+* array[array[:, column_for_comparison] == value_for_comparison, column_for_assignment] = new_value
+
+- EJERCICIO: Practiquemos este patrón utilizando nuestro conjunto de datos de taxi: Hemos creado una nueva copia de nuestro conjunto de datos de taxi, taxi_modifiedcon una columna adicional que contiene el valor 0de cada fila.
+
+* En nuestra nueva columna en el índice 15, asigne el valor 1si pickup_location_code(el índice de la columna 5) corresponde a una ubicación del aeropuerto, dejando el valor de 0otra manera realizando estas tres operaciones:
+* # Crear una nueva columna rellena con `0`.
+* zeros = np.zeros([taxi.shape[0], 1])
+* taxi_modified = np.concatenate([taxi, zeros], axis=1)
+* print(taxi_modified)      
+ 
+* taxi_modified[taxi_modified[:, 5] == 2, 15] = 1            Para las filas en las que el valor del índice de columna 5es igual a 2(Aeropuerto JFK), asigne el valor 1al índice de columna 15.
+* taxi_modified[taxi_modified[:, 5] == 3, 15] = 1            Para las filas en las que el valor del índice de columna 5es igual a 3(Aeropuerto de LaGuardia), asigne el valor 1al índice de columna 15.
+* taxi_modified[taxi_modified[:, 5] == 5, 15] = 1            Para las filas donde el valor del índice de columna 5es igual a 5(Aeropuerto de Newark), asigne el valor 1al índice de columna 15.
+ 
 #
 
 
