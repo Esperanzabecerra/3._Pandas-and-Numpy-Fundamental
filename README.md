@@ -788,89 +788,239 @@ EJERCICIO: Practiquemos el uso de esta técnica para seleccionar una columna esp
 * industries = f500["industry"]         Seleccione la industrycolumna. Asigne el resultado al nombre de la variable industries.
 * industries_type = type(industries)    Utilice la type()función de Python para asignar el tipo de industriesa industries_type.
 
+# Introducción a la serie
 
+- En la última pantalla, observamos que cuando selecciona solo una columna de un marco de datos, obtiene un nuevo tipo de pandas: un objeto de serie . Series es el tipo de pandas para objetos unidimensionales. Cada vez que veas un objeto pandas 1D, será una serie. Cada vez que vea un objeto pandas 2D, será un marco de datos.
 
+- De hecho, puedes pensar en un marco de datos= DataFrame como una colección de objetos de series, que es similar a cómo los pandas almacenan los datos detrás de la escena. 
 
+# Selección de columnas de un marco de datos=DataFrame por etiqueta Continuación
 
+- A continuación, vamos a aprender cómo seleccionar varias columnas. A continuación, utilizamos una lista de etiquetas para seleccionar columnas específicas:
 
+* f500_selection.loc[:,["country","rank"]]
+* f500_selection[["country","rank"]]
+* Debido a que el objeto devuelto es bidimensional, sabemos que es un marco de datos , no una serie. Nuevamente, en lugar de df.loc[:,["col1","col2"]], también puede usar df[["col1", "col2"]]para seleccionar columnas específicas.
 
+- Terminemos con el uso de un objeto de división con etiquetas para seleccionar columnas específicas:
 
+* f500_selection.loc[:,"rank":"profits"]
 
+- Nuevamente obtenemos un objeto de marco de datos, con todas las columnas desde la primera hasta la última , e incluso , la última columna de nuestra división. También tenga en cuenta que no hay acceso directo para seleccionar segmentos de columna.
 
+- A continuación un resumen de las técnicas que hemos aprendido hasta ahora:
 
+*  Seleccionar por etiqueta	    Sintaxis explícita	         Taquigrafía común
+*  Una sola columna	            df.loc[:,"col1"]	           df["col1"]
+*  Lista de columnas           	df.loc[:,["col1", "col7"]]	 df[["col1", "col7"]]
+* Rebanada de columnas	        df.loc[:,"col1":"col4"]	
 
+EJERCICIO: Practiquemos el uso de estas técnicas para seleccionar columnas específicas de nuestro f500marco de datos.
 
+* countries = f500["country"]                     Seleccione la countrycolumna. Asigne el resultado al nombre de la variable countries.
+* revenues_years =  f500.loc[:,["revenues","years_on_global_500_list"]]          En orden, seleccione las columnas revenues  y years_on_global_500_list.
+* ceo_to_sector =  f500.loc[:, "ceo":"sector"]   En orden, seleccione todas las columnas de ceohasta e incluyendo sector. 
 
+# Selección de filas de un marco de datos por etiqueta
+
+- Ahora que hemos aprendido cómo seleccionar columnas por etiqueta, aprendamos cómo seleccionar filas usando las etiquetas del eje de índice : LAS ETIQUETAS DEL EJE DEL INDICE SON COMO EL EJE VERTICAL DE UNA TABLA COMO LOS NOMBRES DE LAS FILAS
+
+- Utilizamos la misma sintaxis para seleccionar filas de un marco de datos como lo hacemos para las columnas:
+
+* df.loc[row_label, column_label]
 
+- Volveremos a utilizar una selección de nuestros datos, almacenados como la variable * f500_selection :
+
+- Seleccione una sola fila
+* single_row = f500_selection.loc["Sinopec Group"]
+* print(type(single_row))
+* print(single_row)
+* class 'pandas.core.series.Series'
+* RESPUESTA
+* rank             3
+* revenues    267518
+* profits     1257.9
+* country      China
+* Name: Sinopec Group, dtype: object
 
+- Tenga en cuenta que el objeto devuelto es una serie porque es unidimensional. Como esta serie tiene que almacenar valores enteros, flotantes y de cadena, los pandas usan el tipo de objectdty, ya que ninguno de los tipos numéricos podría atender a todos los valores.
 
+- Seleccione una lista de filas
 
+* list_rows = f500_selection.loc[["Toyota Motor", "Walmart"]]
+* print(type(list_rows))
+* print(list_rows)
+* RESPUESTA
+* class 'pandas.core.frame.DataFrame'
+*               rank  revenues  profits country
+* Toyota Motor     5    254694  16899.3   Japan
+* Walmart          1    485873  13643.0     USA
 
+- Seleccione un objeto slice con etiquetas
 
+Para la selección utilizando cortes, podemos utilizar el acceso directo a continuación. Esta es la razón por la que no podemos usar este acceso directo para las columnas, porque está reservado para su uso con filas:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+* slice_rows = f500_selection["State Grid":"Toyota Motor"]
+* print(type(slice_rows))
+* print(slice_rows) 
+* RESPUESTA
+* class 'pandas.core.frame.DataFrame'
+*                           rank  revenues  profits country
+* State Grid                   2    315199   9571.3   China
+* Sinopec Group                3    267518   1257.9   China
+* China National Petroleum     4    262573   1867.5   China
+* Toyota Motor                 5    254694  16899.3   Japan
+
+-EJERCICIO: Seleccionando datos de f500:
+1. Crea una nueva variable toyota, con: * Sólo la fila con índice Toyota Motor.  * Todas las columnas.
+2. Crea una nueva variable drink_companies, con: * Filas con indicios Anheuser-Busch InBev, Coca-Colay Heineken Holding, en ese orden.
+* Todas las columnas.
+3. Crea una nueva variable, middle_companiescon:* Todas las filas con indicios de Tata Motorsa Nationwide, inclusive. * Todas las columnas de ranka country, inclusive.
+* toyota = f500.loc['Toyota Motor']
+* drink_companies = f500.loc[["Anheuser-Busch InBev", "Coca-Cola", "Heineken Holding"]]
+* middle_companies = f500.loc["Tata Motors":"Nationwide", "rank":"country"]
+
+# Series vs Dataframes
+
+- En el último par de pantallas, creamos objetos de serie y de marco de datos cuando seleccionamos datos de nuestro f500marco de datos . Tómese un minuto para revisar estos ejemplos antes de continuar:
+
+*    ORIGINAL DATAFRAME                CODE                                                       RESULT
+* Selecciono la columna D        single_col = df["D"]                single_col es un objeto de serie  Obtengo una sola columna D
+* Selecciono la fila v           single_row = df.loc["v"]            single_row es un objeto de serie  Obtengo una sola fila v
+* Selecciono la columna A,C,D    mult_cols = df[["A", "C", "D"]]     mult_cols es un objeto de DataFrame  Obtengo tres columnas A,C,D
+* Selecciono la fila v,w,x       mult_row = df.loc[["v", "w", "x"]]  mult_row es un objeto de DataFrame  Obtengo tres filas v, w, x
+
+# Método del valor de las cuentas
+
+- Dado que las series y los marcos de datos son dos objetos distintos, tienen sus propios métodos únicos. Veamos un ejemplo de un método de serie a continuación: el Series.value_counts()método . Este método muestra cada valor no nulo único en una columna y sus cuentas en orden.
+
+- Primero, seleccionaremos solo una columna del f500marco de datos:
+* sectors = f500["sector"]
+* print(type(sectors))      class 'pandas.core.series.Series'
+
+- A continuación, sustituiremos "Series" Series.value_counts()con el nombre de nuestra sectorsserie, como a continuación:
+
+* sectors_value_counts = sectors.value_counts()
+* print(sectors_value_counts)
+* RESPUESTA
+* Financials                       118
+* Energy                            80
+* Technology                        44
+* Motor Vehicles & Parts            34
+* Wholesalers                       28
+* Health Care                       27
+* Food & Drug Stores                20
+* Transportation                    19
+* Telecommunications                18
+* Retailing                         17
+* Food, Beverages & Tobacco         16
+* Materials                         16
+* Industrials                       15
+* Aerospace & Defense               14
+* Engineering & Construction        13
+* Chemicals                          7
+* Media                              3
+* Household Products                 3
+* Hotels, Restaurants & Leisure      3
+* Business Services                  3
+* Apparel                            2
+* Name: sector, dtype: int64
+
+- En la serie resultante, podemos ver cada valor único no nulo en la columna y sus recuentos.
+
+- Veamos qué sucede cuando intentamos utilizar el Series.value_counts()método con un marco de datos. Primero, seleccionaremos las columnas sectory industrypara crear un marco de datos llamado sectors_industries:
+* sectors_industries = f500[["sector", "industry"]]
+* print(type(sectors_industries))
+
+- Luego, trataremos de usar el value_counts()método:
+* si_value_counts = sectors_industries.value_counts()
+* print(si_value_counts)      < class 'pandas.core.frame.DataFrame' >
+
+- Dado que value_counts()es un método solo de serie , obtenemos el siguiente error:
+* AttributeError: 'DataFrame' object has no attribute 'value_counts'
+
+EJERCICIO:  Ya hemos guardado una selección de datos f500en un marco de datos llamado f500_sel. 1. Encuentre los conteos de cada valor único en la countrycolumna en el f500_selmarco de datos. * Seleccione la countrycolumna en el f500_selmarco de datos. Asígnele a una variable nombrada countries. * Utilice el Series.value_counts()método para devolver los recuentos de valores countries. Asigna los resultados a country_counts.
+
+* countries = f500_sel["country"]
+* country_counts = countries.value_counts()
+
+#  Selección de artículos de una serie por etiqueta
+
+- En el último ejercicio, practicamos utilizando el Series.value_counts()método. A continuación, encontremos los recuentos de cada valor único en la countrycolumna para todo el f500marco de datos:
+
+* countries = f500["country"]
+* country_counts = countries.value_counts()
+
+* USA             132
+* China           109
+* Japan            51
+* Germany          29
+* France           29
+* Britain          24
+* South Korea      15
+* Netherlands      14
+* Switzerland      14
+* Canada           11
+* Spain             9
+* Brazil            7
+* Australia         7
+* India             7
+* Italy             7
+* Taiwan            6
+* Russia            4
+* Ireland           4
+* Sweden            3
+* Singapore         3
+* Mexico            2
+* Israel            1
+* Turkey            1
+* Norway            1
+* Thailand          1
+* Belgium           1
+* Venezuela         1
+* Luxembourg        1
+* Denmark           1
+* Indonesia         1
+* Malaysia          1
+* Saudi Arabia      1
+* Finland           1
+* U.A.E             1
+* Name: country, dtype: int64
+
+- Sin embargo, ¿qué pasa si quisiéramos seleccionar sólo el recuento para la India? ¿O las cuentas solo para los países de América del Norte?
+
+- Al igual que con los marcos de datos, podemos utilizar Series.loc[]para seleccionar elementos de una serie utilizando etiquetas individuales, una lista o un objeto de sector. También podemos omitir loc[]y usar accesos directos de paréntesis para los tres:
+
+*    Seleccionar por etiqueta	               Sintaxis explícita	            Convención de taquigrafía
+*  Solo artículo de la serie	                s.loc["item8"]	                    s["item8"]
+*  Lista de artículos de la serie	          s.loc[["item1","item7"]]	          s[["item1","item7"]]
+*  Rebanada de artículos de la serie.	      s.loc["item2":"item4"]	            s["item2":"item4"]
+
+- EJERCICIO: De la serie de pandas countries_counts: 1. Seleccione el elemento en la etiqueta de índice India. Asigne el resultado al nombre de la variable india. 2. Con el fin, seleccionar los elementos con etiquetas de índice USA, Canaday Mexico. Asigne el resultado al nombre de la variable north_america.
+
+* countries = f500['country']
+* countries_counts = countries.value_counts()
+* india = countries_counts["India"]
+* north_america = countries_counts[["USA","Canada","Mexico"]]
+
+# Resumen del desafío
+- Veamos un resumen de todos los diferentes métodos de selección de etiquetas que hemos aprendido en esta misión:
+
+*       Seleccionar por etiqueta	                       Sintaxis explícita	          Convención de taquigrafía
+* Columna única desde el marco de datos                df.loc[:,"col1"]	                     df["col1"]
+* Lista de columnas del marco de datos	               df.loc[:,["col1","col7"]]	           df[["col1","col7"]]
+* Rebanada de columnas de dataframe	                   df.loc[:,"col1":"col4"]	
+* Una sola fila desde el marco de datos	               df.loc["row4"]	
+* Lista de filas del marco de datos	                   df.loc[["row1", "row8"]]	
+* Rebanada de filas de dataframe	                     df.loc["row3":"row5"]	               df["row3":"row5"]
+* Solo artículo de la serie	                           s.loc["item8"]	                       s["item8"]
+* Lista de artículos de la serie	                     s.loc[["item1","item7"]]	             s[["item1","item7"]]
+* Rebanada de artículos de la serie.	                 s.loc["item2":"item4"]	               s["item2":"item4"]
+
+EJERCICIO: Seleccionando datos de f500: 1. Crea una nueva variable big_movers, con: * Las filas con índices Aviva, HP, JD.com, y BHP Billiton, en ese orden. * Las columnas ranky previous_rank, en ese orden.  2. Crea una nueva variable, bottom_companiescon: * Todas las filas con índices desde National Grida AutoNation, inclusive. * El rank, sectory countrycolumnas.
+
+* big_movers = f500.loc[["Aviva", "HP", "JD.com", "BHP Billiton"], ["rank","previous_rank"]]
+* bottom_companies = f500.loc["National Grid":"AutoNation", ["rank","sector","country"]]
 
 # 4. Exploring Data with Pandas: Fundamentals
 
