@@ -1807,22 +1807,173 @@ Esta es la forma más convencional de leer en un marco de datos, y es el método
 
 # Usando Operadores Booleanos Continúa
 
+- En el último ejercicio, identificamos compañías que tienen más de 100 mil millones en ingresos y ganancias negativas:
 
+- Al igual que cuando usamos una única matriz booleana para realizar la selección, no necesitamos usar variables intermedias. El primer lugar donde podemos optimizar nuestro código es mediante la combinación de nuestros dos arreglos booleanos en una sola línea, en lugar de asignarlos primero al intermedio large_revenuey las negative_profitsvariables:
 
+* combined = (f500["revenues"] > 100000) & (f500["profits"] < 0)
 
+- Observe que usamos paréntesis alrededor de cada una de nuestras comparaciones booleanas. Esto es muy importante: nuestra operación booleana fallará sin paréntesis . Por último, en lugar de asignar las matrices booleanas a combined, podemos insertar la comparación directamente en nuestra selección:
 
+* big_rev_neg_profit = f500[(f500["revenues"] > 100000) & (f500["profits"] < 0)]
 
+- Si realizar este paso final es una cuestión de gustos. Como siempre, su decisión debe basarse en lo que hará que su código sea más legible.
 
+- Practiquemos una selección más compleja usando operadores booleanos a continuación:
 
+* Pandas	       Equivalente de Python	              Sentido
+* a & b	               a and b	              True si ambos a y b son True, si no False
+* a | b	               a or b	                True si cualquiera a o b es True
+* ~a	                 not a	                True si aes False, si no False
 
+- EJERCICIO: 1. Seleccione todas las filas para empresas con sede en Brasil o Venezuela. Asigna el resultado a brazil_venezuela.
+2. Seleccione las primeras cinco compañías en el sector de Tecnología que no tienen su sede en los EE f500. UU. Desde el marco de datos. Asigna el resultado a tech_outside_usa.
 
+* filter_brazil_venezuela = (f500["country"] == "Brazil") | (f500["country"] == "Venezuela")
+* brazil_venezuela = f500[filter_brazil_venezuela]
 
+* filter_tech_outside_usa = (f500["sector"] == "Technology") & ~(f500["country"] == "USA")
+* tech_outside_usa = f500[filter_tech_outside_usa].head()
 
+#  Valores de clasificación
 
+- Continuemos respondiendo preguntas más complejas sobre nuestro conjunto de datos. Supongamos que quisiéramos encontrar la compañía que emplea a la mayoría de las personas en China. Podemos lograr esto seleccionando primero todas las filas donde la countrycolumna es igual a China:
 
+* selected_rows = f500[f500["country"] == "China"]
 
+- Luego, podemos usar el DataFrame.sort_values()método para ordenar las filas en la employeescolumna. Para ello, pasamos el nombre de la columna al método:
 
+* sorted_rows = selected_rows.sort_values("employees")
+* print(sorted_rows[["company", "country", "employees"]].head())
+* RESPUESTA
+*  employees
+* 204                         Noble Group   China       1000
+* 458             Yango Financial Holding   China      10234
+* 438  China National Aviation Fuel Group   China      11739
+* 128                         Tewoo Group   China      17353
+* 182            Amer International Group   China      17852
 
+- De forma predeterminada, el sort_values()método ordenará las filas en orden ascendente , de menor a mayor. Para ordenar las filas en orden descendente , para que aparezca primero la empresa con el mayor número de empleados, podemos configurar el ascendingparámetro para False:
+
+* sorted_rows = selected_rows.sort_values("employees", ascending=False)
+print(sorted_rows[["company", "country", "employees"]].head())
+* RESPUESTA
+* _                       company country  employees
+* 3      China National Petroleum   China    1512048
+* 118            China Post Group   China     941211
+* 1                    State Grid   China     926067
+* 2                 Sinopec Group   China     713288
+* 37   Agricultural Bank of China   China     501368
+
+- Ahora, podemos ver que la compañía china que emplea a la mayoría de las personas es China National Petroleum. Vamos a buscar la empresa japonesa con más empleados a continuación.
+
+- EJERCICIO:
+1. Encuentre la compañía con sede en Japón con el mayor número de empleados.
+* Seleccione solo las filas que tienen un nombre de país igual a Japan.
+* Utilice DataFrame.sort_values()para ordenar esas filas por la employeescolumna en orden descendente .
+* Utilice DataFrame.iloc[] para seleccionar la primera fila del marco de datos ordenado.
+* Extraiga el nombre de la compañía de la etiqueta de índice companyde la primera fila. Asigna el resultado a top_japanese_employer.
+2. Después de ejecutar su código, use el inspector de variables para ver el empleador principal para Japan.
+
+* selected_rows = f500[f500["country"] == "Japan"]
+* sorted_rows = selected_rows.sort_values("employees", ascending=False)
+* top_japanese_employer = sorted_rows.iloc[0]["company"]
+
+# Usando Loops = bucles con pandas
+
+- En la última pantalla, confirmamos que la compañía japonesa que emplea a la mayoría de las personas es Toyota Motor.
+
+- Supongamos que quisiéramos calcular la compañía que emplea a la mayoría de las personas en cada uno de los 34 países. El uso del método de la última pantalla sería muy ineficiente, por lo que confiaremos en una técnica que aún no hemos usado con pandas: bucles.
+
+- Hemos evitado explícitamente el uso de bucles en pandas porque uno de los beneficios clave de los pandas es que tiene métodos vectorizados para trabajar con datos de manera más eficiente. Aprenderemos técnicas más avanzadas en cursos posteriores, pero por ahora, aprenderemos cómo usar los bucles para la agregación .
+
+- La agregación es donde aplicamos una operación estadística a grupos de nuestros datos. Digamos que queríamos calcular el ingreso promedio para cada país en el conjunto de datos. Nuestro proceso podría verse así:
+
+* Identificar cada país único en el conjunto de datos.
+* Para cada país:   * Selecciona solo las filas correspondientes a ese país.
+                    * Calcule el ingreso promedio para esas filas.
+
+- Para identificar los países únicos, podemos utilizar el Series.unique()método . Este método devuelve una matriz de valores únicos de cualquier serie. Luego, podemos hacer un bucle sobre esa matriz y realizar nuestra operación. Esto es lo que parece:
+
+* # Crear un diccionario vacio para almacenar los resultados
+* avg_rev_by_country = {}
+* # Crear una matriz de paises únicos
+* countries = f500["country"].unique()
+* # Use un bucle for para interar sobre los paises
+* for c in countries:
+* # Use la comparación booleana para seleccionar solo las filas que corresponden a un país especifico 
+*     selected_rows = f500[f500["country"] == c]
+* # Calcula el ingreso promedio  solo para esasa filas
+*     mean = selected_rows["revenues"].mean()
+* # Assigne el valor medio al diccionario, usando nombre del pais como clave 
+*     avg_rev_by_country[c] = mean
+    
+- El diccionario resultante está debajo (hemos mostrado solo las primeras teclas):     
+    
+*     {'Australia': 33688.71428571428,
+*  'Belgium': 45905.0,
+*  'Brazil': 52024.57142857143,
+*  'Britain': 51588.708333333336,
+*  'Canada': 31848.0,
+*  'China': 55397.880733944956,
+*  'Denmark': 35464.0,
+*  ...}
+
+- EJERCICIO: En este ejercicio, vamos a producir el siguiente diccionario del empleador principal en cada país:
+
+* {'Australia': 'Wesfarmers',
+*  'Belgium': 'Anheuser-Busch InBev',
+*  'Brazil': 'JBS',
+*  ...
+*  'U.A.E': 'Emirates Group',
+*  'USA': 'Walmart',
+*  'Venezuela': 'Mercantil Servicios Financieros'}
+1. Crea un diccionario vacío, top_employer_by_countrypara almacenar los resultados del ejercicio.
+2. Utilice el Series.unique() método para crear una matriz de valores únicos de la countrycolumna.
+3. Utilice un bucle for para iterar sobre los países únicos de la matriz. En cada iteración:
+* Seleccione solo las filas que tienen un nombre de país igual a la iteración actual.
+* Utilice DataFrame.sort_values() para ordenar esas filas por la employeescolumna en orden descendente .
+* Seleccione la primera fila del marco de datos ordenado.
+* Extraiga el nombre de la compañía de la etiqueta de índice companyde la primera fila.
+* Asigne los resultados al top_employer_by_country diccionario, utilizando el nombre del país como clave y el nombre de la empresa como valor.
+4. Después de ejecutar su código, use el inspector de variables para ver el principal empleador de cada país.
+
+* top_employer_by_country = {}
+
+* countries = f500["country"].unique()
+* for c in countries:
+*     selected_rows = f500[f500["country"] == c]
+*     sorted_rows = selected_rows.sort_values("employees", ascending=False)
+*     top_employer = sorted_rows.iloc[0]
+*     employer_name = top_employer["company"]
+*     top_employer_by_country[c] = employer_name
+
+# Desafío: Cálculo del rendimiento de los activos por país
+
+- ¡Ahora es el momento de un desafío para juntar todo! En este desafío, agregaremos una nueva columna a nuestro marco de datos y luego realizaremos una agregación utilizando esa nueva columna.
+
+- La columna que creamos contendrá una métrica llamada retorno de activos (ROA). ROA es una métrica específica de negocios que indica la capacidad de una empresa para obtener ganancias utilizando sus activos disponibles. 
+
+* return on assets = profit / assets         https://www.inc.com/encyclopedia/return-on-assets-roa.html
+
+- Una vez que hayamos creado la nueva columna, agregaremos por sector y encontraremos la compañía con el ROA más alto de cada sector. Al igual que los desafíos anteriores, brindaremos orientación en los consejos, pero si es posible, intente completarlos sin ellos.
+
+- No se desanime si este desafío requiere algunos intentos para ser correcto. Trabajar de manera iterativa es una excelente manera de trabajar, y este desafío es más difícil que los ejercicios que ha completado anteriormente.
+
+- EJERCICIO: 1. Cree una nueva columna roaen el f500marco de datos, que contenga la métrica de retorno de activos para cada compañía.
+2. Agregue los datos por la sectorcolumna y cree un diccionario top_roa_by_sectorcon:
+* Teclas de diccionario con el nombre del sector.
+* Diccionario de valores con el nombre de la empresa con el valor de ROA más alto de ese sector.
+
+* f500["roa"] = f500["profits"] / f500["assets"]
+
+* top_roa_by_sector = {}
+* for sector in f500["sector"].unique():
+*     is_sector = f500["sector"] == sector
+*     sector_companies = f500.loc[is_sector]
+*     top_company = sector_companies.sort_values("roa",ascending=False).iloc[0]
+*     company_name = top_company["company"]
+*     top_roa_by_sector[sector] = company_name
 
 # 6. Data Cleaning Basics
 
