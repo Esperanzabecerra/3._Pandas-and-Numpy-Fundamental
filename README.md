@@ -1975,7 +1975,78 @@ print(sorted_rows[["company", "country", "employees"]].head())
 *     company_name = top_company["company"]
 *     top_roa_by_sector[sector] = company_name
 
-# 6. Data Cleaning Basics
+# 6. Fundamentos De Limpieza De Datos
+
+- Hasta ahora, hemos aprendido cómo seleccionar, asignar y analizar datos con pandas usando datos previamente limpiados. En realidad, los datos rara vez están en el formato necesario para realizar el análisis. Los científicos de datos suelen pasar más de la mitad de su tiempo limpiando datos , por lo que saber cómo limpiar datos "desordenados" es una habilidad extremadamente importante.
+
+* https://www.forbes.com/sites/gilpress/2016/03/23/data-preparation-most-time-consuming-least-enjoyable-data-science-task-survey-says/#47dd0c406f63
+
+- En esta misión, aprenderemos los aspectos básicos de la limpieza de datos con pandas mientras trabajamos con laptops.csvun archivo CSV que contiene información sobre 1,300 computadoras portátiles. Las primeras cinco filas del archivo CSV se muestran a continuación:
+
+* laptops = pd.read_csv("laptops.csv")          UnicodeDecodeError                        Traceback 
+
+- Recibimos un error! (El mensaje de error se ha acortado). Este error hace referencia a UTF-8, que es un tipo de codificación . Las computadoras, en sus niveles más bajos, solo pueden entender binarios 0 y 1, y las codificaciones son sistemas para representar caracteres en binarios.
+
+- Algo que podemos hacer si nuestro archivo tiene una codificación desconocida es probar las codificaciones más comunes:
+
+* UTF-8
+* Latin-1 (también conocido como ISO-8895-1)
+* Windows-1251
+
+- La pandas.read_csv() función tiene un encoding argumento que podemos usar para especificar una codificación:
+
+* df = pd.read_csv("filename.csv", encoding="some_encoding")
+
+- Como la pandas.read_csv()función ya intentó leer el archivo con UTF-8 y falló, sabemos que el archivo no está codificado con ese formato. Probemos la siguiente codificación más popular en el ejercicio.
+
+- EJERCICIO: 
+* import pandas as pd                                           Importar la biblioteca de pandas.
+* laptops = pd.read_csv('laptops.csv', encoding='Latin-1')      Utilice la pandas.read_csv()función para leer el laptops.csvarchivo en un marco de datos laptops. Especifique la codificación utilizando la cadena "Latin-1".
+* laptops.info()                             Utilice el DataFrame.info()método para mostrar información sobre el laptopsmarco de datos.
+
+# Nombres de columnas de limpieza
+
+- A continuación se muestra el resultado del DataFrame.info()método de la pantalla anterior:
+
+* class 'pandas.core.frame.DataFrame'
+* RangeIndex: 1303 entries, 0 to 1302
+* Data columns (total 13 columns):
+* Manufacturer                1303 non-null object
+* Model Name                  1303 non-null object
+* Category                    1303 non-null object
+* Screen Size                 1303 non-null object
+* Screen                      1303 non-null object
+* CPU                         1303 non-null object
+* RAM                         1303 non-null object
+*  Storage                    1303 non-null object
+* GPU                         1303 non-null object
+* Operating System            1303 non-null object
+* Operating System Version    1133 non-null object
+* Weight                      1303 non-null object
+* Price (Euros)               1303 non-null object
+* dtypes: object(13)
+* memory usage: 132.4+ KB
+
+- Podemos ver que cada columna se representa como el objecttipo, lo que indica que están representadas por cadenas, no por números. Además, una de las columnas,Operating System Version
+
+- Las etiquetas de las columnas tienen una variedad de letras mayúsculas y minúsculas, así como espacios y paréntesis, lo que hará que sea más difícil trabajar con ellas y leerlas. Un problema notable es que la" Storage"
+
+- Podemos acceder al eje de columna de un marco de datos utilizando el DataFrame.columnsatributo . Esto devuelve un objeto de índice, un tipo especial de Ndarray NumPy, con las etiquetas de cada columna:
+
+* print(laptops.columns)
+
+Index(['Manufacturer', 'Model Name', 'Category', 'Screen Size', 'Screen',
+       'CPU', 'RAM', ' Storage', 'GPU', 'Operating System',
+       'Operating System Version', 'Weight', 'Price (Euros)'],
+      dtype='object')
+
+
+
+
+
+
+
+
 
 # 7. Guiaded Proyect: Exploring Ebay Car Sales Data
 
