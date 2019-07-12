@@ -1636,7 +1636,192 @@ Esta es la forma más convencional de leer en un marco de datos, y es el método
 
 * null_previous_rank = f500[f500["previous_rank"].isnull()][["company","rank", "previous_rank"]]
 
-# 
+# Trabajar con etiquetas enteras
+- En el último ejercicio, seleccionamos las filas con valores nulos en la previous_rankcolumna. A continuación se muestran las primeras dos filas:
+
+*      Empresa	                   Rango	  previous_rank
+* 48	 Grupo Legal y General	      49	         NaN
+* 90	 Uniper	                      91	         NaN
+* 123	 Tecnologías Dell	           124	         NaN
+* Anterior, podemos ver que los ejes índice de etiquetas para esta selección son 48, 90y 123.
+
+- Si quisiéramos seleccionar la primera compañía de nuestro nuevo null_previous_rankmarco de datos por posición de entero , podemos usar DataFrame.iloc[]:
+
+* first_null_prev_rank = null_previous_rank.iloc[0]
+* print(first_null_prev_rank)
+* company          Legal & General Group
+* rank                                49
+* previous_rank                      NaN
+* Name: 48, dtype: object
+
+- Veamos que pasa cuando usamos en DataFrame.loc[]lugar de DataFrame.iloc[]:
+
+* first_null_prev_rank = null_previous_rank.loc[0]              KeyError: 'the label [0] is not in the [index]'
+
+- Recibimos un error que nos dice que the label [0] is not in the [index](el seguimiento real de este error es mucho más largo que esto). Recuerde que DataFrame.loc[]se utiliza para la selección basada en etiquetas :
+
+* l oc: l selección basada en etiqueta
+* i loc: selección basada en posición entera
+* Debido a que no hay una fila con una 0etiqueta en el índice, obtuvimos el error anterior. Si quisiéramos seleccionar una fila usando loc[], tendríamos que usar la etiqueta entera para la primera fila - 48.
+
+- Siempre piense detenidamente si desea seleccionar por etiqueta o posición de entero . Utilizar DataFrame.loc[]o en DataFrame.iloc[]consecuencia.
+
+* iloc[1]  Usa la posición entera de la fila para seleccionar la segunda fila.                       df.iloc[1] SELECCIONAR FILA 2
+* loc[1]   Utiliza la etiqueta de la fila para seleccionar la fila con una etiqueta de eje de 1.     df.loc[1]  SELECCIONAR FILA 1
+
+- EJERCICIO: Asigne las primeras cinco filas del null_previous_rankmarco de datos a la variable seleccionando top5_null_prev_rankel método correcto de cualquiera de loc[]o iloc[].
+
+*  null_previous_rank = f500[f500["previous_rank"].isnull()]
+*  top5_null_prev_rank = null_previous_rank.iloc[:5]
+
+# Alineación del índice de pandas
+
+- Ahora que hemos identificado las filas con valores nulos en la previous_rankcolumna, usemos el Series.notnull()método para excluirlas de la siguiente parte de nuestro análisis.
+
+* previously_ranked = f500[f500["previous_rank"].notnull()]
+
+- Luego podemos crear una rank_changecolumna restando la rankcolumna de la previous_rankcolumna:
+
+* rank_change = previously_ranked["previous_rank"] - previously_ranked["rank"]
+* print(rank_change.shape)
+* print(rank_change.tail(3))
+
+* (467,)
+* 496   -70.0
+* 497   -61.0
+* 498   -32.0
+* dtype: float64
+
+- Arriba, podemos ver que nuestra rank_changeserie tiene 467 filas. Como la última etiqueta de índice de enteros es 498, sabemos que nuestras etiquetas de índice ya no se alinean con las posiciones de enteros.
+
+- Supongamos que ahora decidimos agregar la rank_changeserie al f500marco de datos como una nueva columna. Sus etiquetas de índice ya no coinciden con las etiquetas de índice f500, así que, ¿cómo podría hacerse esto?
+
+- Otro aspecto poderoso de los pandas es que casi todas las operaciones se alinearán en las etiquetas de índice . Veamos un ejemplo: a continuación tenemos un marco de datos llamado foody una serie llamada alt_name:
+
+*                fruit_veg        qty 
+* tomato          fruit            4         
+* carrot          veg              2
+* lime            fruit            4                                     arugula     rocket
+* corn            veg              1                                     eggplant    aubergine
+* eggplant        veg              2                                     corn        maize
+                       food                                                          alt_name
+                       
+- La foodtrama de datos y la alt_nameserie no sólo tienen un número diferente de elementos, pero también sólo tienen dos de las mismas etiquetas de índice - corny eggplant- y ellos están en diferentes órdenes. Si quisiéramos agregar alt_name una nueva columna en nuestro food marco de datos, podemos usar el siguiente código:
+
+* food["alt_name"] = alt_name
+
+- Cuando hagamos esto, los pandas ignorarán el orden de la alt_nameserie y se alinearán en las etiquetas de índice:
+
+- Pandas también:
+
+* Deseche cualquier elemento que tenga un índice que no coincida con el marco de datos (como arugula).
+* Rellene las filas restantes con NaN.
+
+- A continuación se muestra el resultado:
+
+*                fruit_veg        qty     alt_name
+* tomato          fruit            4         NaN
+* carrot          veg              2         NaN
+* lime            fruit            4         NaN                            
+* corn            veg              1        maize                           
+* eggplant        veg              2       aubergine                              
+                       food                    
+                       
+- La biblioteca de pandas se alineará en el índice en cada oportunidad, sin importar si nuestras etiquetas de índice son cadenas o enteros; esto hace que trabajar con datos de diferentes fuentes o trabajar con datos cuando hemos eliminado, agregado o reordenado filas sea mucho más fácil de lo que sería de otra manera.                      
+
+- EJERCICIO:
+1. Utilice el Series.notnull() método para seleccionar todas las filas f500 que tengan un valor no nulo para la previous_rank columna. Asignar el resultado apreviously_ranked
+2. Desde el previously_ranked marco de datos, resta la rankcolumna de la previous_rank columna. Asigna el resultado a rank_change.
+3. Asignar los valores en la rank_changeque una nueva columna en la f500 trama de datos, "rank_change".
+
+* previously_ranked = f500[f500["previous_rank"].notnull()]
+* rank_change = previously_ranked["previous_rank"] - previously_ranked["rank"]
+* f500["rank_change"] = rank_change
+
+# Usando Operadores Booleanos
+
+- La indexación booleana es una herramienta poderosa que nos permite seleccionar o excluir partes de nuestros datos en función de sus valores. Sin embargo, para responder preguntas más complejas, necesitamos aprender a combinar arreglos booleanos.
+
+- Para recapitular, las matrices booleanas se crean utilizando cualquiera de los operadores de comparación estándar de Python : ==(igual), >(mayor que), <(menor que), !=(no igual).
+
+- Combinamos matrices booleanas utilizando operadores booleanos . En Python, estos operadores booleanos son and, ory not. En pandas, los operadores son ligeramente diferentes:
+
+* Pandas	       Equivalente de Python	              Sentido
+* a & b	               a and b	              True si ambos a y b son True, si no False
+* a | b	               a or b	                True si cualquiera a o b es True
+* ~a	                 not a	                True si aes False, si no False
+
+- Veamos un ejemplo usando f500_sel una pequeña selección de nuestro f500 marco de datos:
+
+*       Company             Revenues    Country              * cols = ["company", "revenues", "country"] 
+* 0     Walmart             485873      USA                  * f500_sel = f500[cols].head()
+* 1     State Grid          315199      China
+* 2     Sinopec Group       267518      China    
+* 3     China Nation        262573      China
+* 4     Toyota Motor        254694      Japan
+                                 f500_sel
+- Supongamos que quisiéramos encontrar las empresas f500_selcon más de 265 mil millones de ingresos que tienen su sede en China. Comenzaremos realizando dos comparaciones booleanas para producir dos matrices booleanas separadas (la columna de ingresos ya está en millones).
+
+* 0   True            * 0   False               * over_265 = f500_sel["revenue"] > 265000
+* 1   True            * 1   True                * china = f500_sel["country"] == "china"
+* 2   True            * 2   True
+* 3   False           * 3   True 
+* 4   False           * 4   False  
+  over_265               china
+  
+- Luego usamos el &operador para combinar las dos matrices booleanas usando la lógica booleana "and":
+
+* 0   True     &      * 0   False     =     * 0   False      
+* 1   True     &      * 1   True      =     * 1   True        *  combined = over_265 & china
+* 2   True     &      * 2   True      =     * 2   True
+* 3   False    &      * 3   True      =     * 3   False
+* 4   False    &      * 4   False     =     * 4   False
+  over_265               china                combined
+
+- Por último, utilizamos la matriz booleana combinada para realizar la selección en nuestro marco de datos:
+
+* final_cols = ["company","revenues"]   
+* result = f500_sel.loc[combined, final_cols]
+*                Company           Revenues    Country              
+* 0   False     Walmart             485873      USA          Company           Revenues             
+* 1   True  =>  State Grid          315199      China   =>  State Grid          315199
+* 2   True  =>  Sinopec Group       267518      China   =>  Sinopec Group       267518 
+* 3   False     China Nation        262573      China          result
+* 4   False     Toyota Motor        254694      Japan          
+   combined      f500_sel
+
+
+- El resultado nos da dos compañías de las f500_selcuales ambas son chinas y tienen más de 265 mil millones en ingresos.
+
+-EJERCICIO: Practiquemos una selección más compleja utilizando operadores booleanos.
+1. Seleccione todas las compañías con ingresos de más de 100 mil millones y ganancias negativas del f500marco de datos. El resultado debe incluir todas las columnas.
+* Seleccione las empresas con ingresos superiores a los 100 mil millones. Asigna el resultado a large_revenue.
+* Seleccione las empresas con ganancias menores a 0. Asigne el resultado a negative_profits.
+* Combinar large_revenue y negative_profits. Asigna el resultado a combined.
+* Utilizar combined para filtrar f500. Asigna el resultado a big_rev_neg_profit.
+
+* large_revenue =  f500["revenues"] > 100000
+* negative_profits = f500["profits"] < 0
+* combined = large_revenue & negative_profits
+* big_rev_neg_profit =  f500[combined]
+
+# Usando Operadores Booleanos Continúa
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # 6. Data Cleaning Basics
