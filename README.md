@@ -1250,12 +1250,138 @@ EJERCICIO: Utilice el DataFrame.max()método para encontrar el valor máximo sol
 * years_on_global_500_list         23.0
 * employees                   2300000.0
 * total_stockholder_equity     301893.0
-* 
-dtype: float64
+* dtype: float64
 
+- En base a las descripciones de las columnas, el máximo para cada una de estas columnas parece razonable.
 
+- Al igual que los objetos de serie, los objetos de marco de datos también tienen un DataFrame.describe()método que podemos usar para explorar el marco de datos más rápidamente. Le recomendamos que eche un vistazo a la documentación utilizando el enlace de la oración anterior para familiarizarse con algunas de las diferencias entre los dos métodos.
 
+- Una diferencia es que debemos especificar manualmente si desea ver las estadísticas de las columnas no numéricas. Por defecto, DataFrame.describe()devolverá estadísticas solo para columnas numéricas. Si quisiéramos obtener solo las columnas de objetos, necesitamos usar el include=['O']parámetro:
 
+* print(f500.describe(include=['O']))
+* _            ceo    industry     sector  country  hq_location    website
+* count        500         500        500      500          500        500
+* unique       500          58         21       34          235        500
+* top     Xavie...   Banks:...  Financ...      USA  Beijing,...  http:/...
+* freq           1          51        118      132           56 
+
+- Tenga en cuenta que, si bien el Series.describe()método devuelve un objeto de serie, el DataFrame.describe()método devuelve un objeto de marco de datos. Practiquemos usando el método de descripción de marco de datos a continuación.
+
+- EJERCICIO: Devuelve un marco de datos de estadísticas descriptivas para todas las columnas numéricas en f500. Asigna el resultado a f500_desc.
+* f500_desc = f500.describe()
+
+# Asignación con pandas
+
+- Después de revisar las estadísticas descriptivas para las columnas numéricas en f500, podemos concluir que no hay valores que parezcan inusuales además de los 0valores en la previous_rankcolumna. Anteriormente, llegamos a la conclusión de que las empresas con un rango de cero no tenían un rango en absoluto. A continuación, reemplazaremos estos valores con un valor nulo para indicar claramente que falta el valor.
+
+- Aprenderemos cómo hacer dos cosas para poder corregir estos valores:
+
+* Realizar tareas en pandas.
+* Utilice la indexación booleana en pandas.
+
+- Comencemos por aprender asignación, comenzando con el siguiente ejemplo:
+
+* top5_rank_revenue = f500[["rank", "revenues"]].head()
+* print(top5_rank_revenue)
+* _                         rank  revenues
+* Walmart                      1    485873
+* State Grid                   2    315199
+* Sinopec Group                3    267518
+* China National Petroleum     4    262573
+* Toyota Motor                 5    254694
+OTRO EJEMPLO 
+* top5_rank_revenue["revenues"] = 0
+* print(top5_rank_revenue)
+* _                        rank  revenues
+* Walmart                      1         0
+* State Grid                   2         0
+* Sinopec Group                3         0
+* China National Petroleum     4         0
+* Toyota Motor                 5         0
+- Al igual que en NumPy, las mismas técnicas que usamos para seleccionar datos podrían usarse para la asignación. Cuando seleccionamos una columna completa por etiqueta y usamos la asignación, asignamos el valor a cada elemento en esa columna.
+
+- Al proporcionar etiquetas para ambos ejes, podemos asignarles un solo valor dentro de nuestro marco de datos.
+
+* top5_rank_revenue.loc["Sinopec Group", "revenues"] = 999
+* print(top5_rank_revenue)
+* _                         rank  revenues
+* Walmart                      1         0
+* State Grid                   2         0
+* Sinopec Group                3       999
+* China National Petroleum     4         0
+* Toyota Motor                 5         0
+
+-EJERCICIO: Practiquemos la asignación de valores utilizando nuestro marco de datos completo de Fortune 500: 1. La compañía "Dow Chemical" ha nombrado un nuevo CEO. Actualice el valor donde se encuentra la etiqueta de la fila Dow Chemicaly para la ceocolumna Jim Fitterlingen el f500marco de datos.
+
+* f500.loc["Dow Chemical","ceo"] = "Jim Fitterling"
+
+# Usando la indexación booleana con objetos pandas
+
+- Ahora que sabemos cómo asignar valores en pandas, estamos un paso más cerca de corregir los 0valores en la previous_rankcolumna.
+
+- Si bien es útil poder reemplazar valores específicos cuando conocemos la etiqueta de la fila con anticipación, esto puede ser engorroso cuando necesitamos reemplazar muchos valores. En su lugar, podemos usar la indexación booleana para cambiar todas las filas que cumplan con los mismos criterios, al igual que hicimos con NumPy.
+
+- Veamos dos ejemplos de cómo funciona la indexación booleana en pandas. Para nuestro ejemplo, trabajaremos con este marco de datos de personas y sus números favoritos:
+* name      num
+* Kylie     12
+* Rahul      8
+* Michael    5
+* Sarah      8
+
+- Vamos a ver qué personas tienen un número favorito de 8 . Primero, realizamos una operación booleana vectorizada que produce una serie booleana:
+* num_bool =df["num"] ==8
+
+- Podemos usar esa serie para indexar todo el marco de datos, dejándonos con las filas que corresponden solo a las personas cuyo número favorito es 8 
+
+* result = df[num_bool]
+
+- Tenga en cuenta que no usamos loc[]. Esto se debe a que las matrices booleanas utilizan el mismo acceso directo que los cortes para seleccionar a lo largo del eje del índice. También podemos usar la serie booleana para indexar solo una columna del marco de datos:
+
+* result = df.loc[num_bool, "name"]
+
+- En este caso, solíamos df.loc[]especificar ambos ejes.
+
+A continuación, usemos la indexación booleana para identificar compañías que pertenecen a la industria de "Vehículos y piezas de motor" en nuestro conjunto de datos de Fortune 500.
+
+- EJERCICIO: 1. Cree una serie booleana motor_bool, que compare si los valores en la industrycolumna del f500marco de datos son iguales a "Motor Vehicles and Parts". 2. Usa la motor_boolserie booleana para indexar la countrycolumna. Asigna el resultado a motor_countries.
+
+* motor_bool = f500["industry"] == "Motor Vehicles and Parts"
+*  motor_countries = f500.loc[motor_bool, "country"]
+
+# Uso de matrices booleanas para asignar valores
+
+- Ahora tenemos todo el conocimiento que necesitamos para arreglar los 0valores en la previous_rankcolumna:
+* Realizar tareas en pandas.
+* Utilice la indexación booleana en pandas.
+
+- Veamos un ejemplo de cómo combinamos estas dos operaciones juntas. Para nuestro ejemplo, cambiaremos los 'Motor Vehicles & Parts'valores de la sectorcolumna a 'Motor Vehicles and Parts', es decir, cambiaremos el signo ( &) a and.
+
+* Primero, creamos una serie booleana comparando los valores en la columna de sector para 'Motor Vehicles & Parts'
+* ampersand_bool = f500["sector"] == "Motor Vehicles & Parts"
+
+- A continuación, usamos esa serie booleana y la cadena "sector"para realizar la asignación.
+* f500.loc[ampersand_bool,"sector"] = "Motor Vehicles and Parts"
+
+- Al igual que vimos en la misión NumPy anteriormente en este curso, podemos eliminar el paso intermedio de crear una serie booleana y combinar todo en una sola línea. Esta es la forma más común de escribir código de pandas para realizar la asignación utilizando matrices booleanas:
+
+* f500.loc[f500["sector"] == "Motor Vehicles & Parts","sector"] = "Motor Vehicles and Parts"
+
+- Ahora podemos seguir este patrón para reemplazar los valores en la previous_rankcolumna. Reemplazaremos estos valores con np.nan. Al igual que en NumPy, np.nan
+
+-Para facilitar la comparación de los valores en esta columna antes y después de nuestra operación, hemos agregado la siguiente línea de código al script.pycodebox:
+
+* prev_rank_before = f500["previous_rank"].value_counts(dropna=False).head()
+
+- Esto utiliza Series.value_counts()y Series.head()muestra los 5 valores más comunes en la previous_rankcolumna, pero agrega un dropna=Falseparámetro adicional , que impide que el Series.value_counts()método excluya los valores nulos cuando realiza su cálculo, como se muestra en la Series.value_counts()documentación. https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Series.value_counts.html
+
+- EJERCICIO: 1. Use la indexación booleana para actualizar los valores en la previous_rankcolumna del f500marco de datos: * Ahora debería haber un valor de np.nandonde previamente había un valor de 0. * Depende de usted si asigna la serie booleana a su propia variable primero, o si completa la operación en una línea. 2. Cree una nueva serie de pandas prev_rank_afterusando la misma sintaxis que se usó para crear la prev_rank_beforeserie. 3. Después de ejecutar su código, use el inspector de variables para comparar prev_rank_beforey prev_rank_after.
+
+* import numpy as np
+* prev_rank_before = f500["previous_rank"].value_counts(dropna=False).head()
+* f500.loc[f500["previous_rank"] == 0, "previous_rank"] = np.nan
+* prev_rank_after = f500["previous_rank"].value_counts(dropna=False).head()
+
+# Creación de nuevas columnas
 
 
 
