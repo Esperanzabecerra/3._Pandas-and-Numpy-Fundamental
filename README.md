@@ -1443,6 +1443,202 @@ A continuación, usemos la indexación booleana para identificar compañías que
 
 # 5. Exploring Data with Pandas: Intermediate
 
+# Introducción
+
+- En esta misión, continuaremos trabajando con el conjunto de datos de Fortune Global 500 de 2017 a medida que aprendemos técnicas más avanzadas de selección y exploración.
+
+- Hasta ahora, hemos proporcionado el código para leer el archivo CSV en pandas para usted. Para comenzar esta misión, aprenderemos cómo usar la pandas.read_csv()función para leer en archivos CSV.
+
+- Echemos un vistazo a las primeras líneas de nuestro archivo CSV en su forma original. Para facilitar la lectura, solo mostramos las primeras cuatro columnas de cada línea:
+
+* company,rank,revenues,revenue_change
+* Walmart,1,485873,0.8
+* State Grid,2,315199,-4.4
+* Sinopec Group,3,267518,-9.1
+* China National Petroleum,4,262573,-12.3
+* Toyota Motor,5,254694,7.7
+
+- EJERCICIO: Ya hemos leído el conjunto de datos en un marco de datos de pandas y lo hemos asignado a una variable nombrada f500. También reemplazamos todos los 0valores en la previous_rankcolumna con NaN, como hicimos en la misión anterior.
+
+1. Seleccione la rank, revenuesy revenue_changecolumnas en f500. Luego, usa el DataFrame.head()método para seleccionar las primeras cinco filas. Asigna el resultado a f500_selection.
+2. Utilice el inspector de variables para ver f500_selection. Compare los resultados con las primeras líneas de nuestro archivo CSV anterior.
+3. Eche un vistazo a la documentación de la pandas.read_csv()función para intentar comprender los resultados. Si tienes problemas para entender, ¡no te preocupes! Explicaremos los resultados en la siguiente pantalla.
+
+* import pandas as pd
+* # read the data set into a pandas dataframe
+* f500 = pd.read_csv("f500.csv", index_col=0)
+* f500.index.name = None
+
+* # replace 0 values in the "previous_rank" column with NaN
+* f500.loc[f500["previous_rank"] == 0, "previous_rank"] = np.nan
+* f500_selection = f500[['rank', 'revenues', 'revenue_change']].head()
+
+# Leyendo archivos CSV con pandas
+- Cuando comparamos el resultado de las primeras líneas de par en el CSV, se habrán dado cuenta de que las etiquetas de los ejes índice son en realidad los valores de la primera columna en el conjunto de datos, company:
+
+* company,rank,revenues,revenue_change
+* Walmart,1,485873,0.8
+* State Grid,2,315199,-4.4
+* Sinopec Group,3,267518,-9.1
+* China National Petroleum,4,262573,-12.3
+* Toyota Motor,5,254694,7.7
+
+- Si revisamos la documentación de la read_csv()función , podemos ver que el index_colparámetro es un argumento opcional y deberíamos especificar qué columna usar como etiquetas de fila para el marco de datos. Cuando usamos un valor de 0, especificamos que queríamos usar la primera columna como etiquetas de fila.
+
+- Veamos lo que la f500trama de datos se ve como si quitamos la segunda línea: f500.index.name = None.
+
+* f500 = pd.read_csv("f500.csv", index_col=0)
+* _                         rank  revenues  revenue_change
+* company                                                    
+* Walmart                      1    485873             0.8
+* State Grid                   2    315199            -4.4
+* Sinopec Group                3    267518            -9.1
+* China National Petroleum     4    262573           -12.3
+* Toyota Motor                 5    254694             7.7
+
+- Observe que sobre las etiquetas de índice está el texto company, el nombre de la primera columna en el CSV. Las pandas utilizaron este valor como el nombre del eje para el eje del índice.
+
+- Tanto la columna como los ejes de índice pueden tener nombres asignados a ellos. Sin embargo, originalmente utilizamos el siguiente código para acceder al nombre de los ejes de índice y configurarlo None, por lo que nuestro marco de datos no tenía un nombre para el eje de índice:
+
+* f500.index.name = None
+
+Volvamos al código restante:
+
+* f500 = pd.read_csv("f500.csv", index_col=0)
+
+- EJERCICIO: A continuación, veamos cómo se ve el marco de datos si lo usamos pandas.read_csv()sin el index_colparámetro.
+1. Utilice la pandas.read_csv()función para leer el f500.csvarchivo CSV como un marco de datos de pandas. Asígnelo al nombre de la variable f500. * No utilice el index_colparámetro.
+2. Use el siguiente código para insertar los valores de NaN en la previous_rankcolumna: f500.loc[f500["previous_rank"] == 0, "previous_rank"] = np.nan
+
+* f500 = pd.read_csv("f500.csv")
+* f500.loc[f500["previous_rank"] == 0, "previous_rank"] = np.nan
+
+# Usando iloc para seleccionar por posición entera
+
+- Hay dos diferencias con este enfoque:
+
+- La company columna ahora se incluye como una columna regular, en lugar de usarse para el índice.
+Las etiquetas de índice son ahora enteros a partir de 0.
+Esta es la forma más convencional de leer en un marco de datos, y es el método que usaremos de aquí en adelante.
+
+- Recuerde que cuando trabajamos con un marco de datos con etiquetas de índice de cadena , usamos loc[] para seleccionar datos:
+
+* EJEMPLO: QUEREMOS SELECCIONAR LA FILA z DE LA COLUMNA A
+* df.loc["z","A"]
+* df.loc["y"] SELECCIONANDO LA FILA y
+
+- En algunos casos, el uso de etiquetas para hacer selecciones hace que las cosas sean más fáciles, aunque en otros, las cosas son más difíciles.
+
+- Al igual que en NumPy, también podemos usar posiciones enteras para seleccionar datos usando Dataframe.iloc[]y Series.iloc[]. Es fácil confundirse loc[]y iloc[]confundirse al principio, pero la forma más fácil es recordar la primera letra de cada método:
+
+* l oc: l selección basada en etiqueta
+* i loc: selección basada en posición entera
+
+- El uso iloc[]es casi idéntico a la indexación con NumPy, con posiciones enteras que comienzan en 0ndarrays y listas de Python. Veamos cómo realizaríamos la selección anterior utilizando iloc[]:
+
+* EJEMPLO: QUEREMOS SELECCIONAR LA FILA z DE LA COLUMNA A
+* df.iloc[2,0]
+* df.iloc["1"] SELECCIONANDO LA FILA y
+
+- Como puedes ver, se DataFrame.iloc[] comporta de manera similar a DataFrame.loc[]. La sintaxis completa para DataFrame.iloc[], en pseudocódigo, es:
+
+* df.iloc[row_index, column_index]
+
+- EJERCICIO: Practiquemos usando el iloc[]siguiente.
+
+* Seleccione solo la quinta fila del f500marco de datos. Asignar el resultado afifth_row
+* Seleccione el valor en la primera fila de la companycolumna. Asigna el resultado a company_value.
+
+* fifth_row = f500.iloc[4]
+* company_value = f500.iloc[0,0] 
+
+# Usando iloc para seleccionar por posición entera continua
+
+- En la última pantalla, aprendimos cómo seleccionar una fila o un valor por posición de enteros usando DataFrame.iloc[]. Como recordatorio, la sintaxis completa de DataFrame.iloc[]pseudocódigo es:
+
+* df.iloc [row_index, column_index]
+
+- Digamos que queríamos seleccionar solo la primera columna de nuestro f500marco de datos. Para hacer esto, usamos :(dos puntos) para especificar todas las filas, y luego usamos el entero 0para especificar la primera columna:
+
+* first_column = f500.iloc[:,0]
+* print(first_column)
+
+* 0                        Walmart
+* 1                     State Grid
+* 2                  Sinopec Group
+* ...
+* 497    Wm. Morrison Supermarkets
+* 498                          TUI
+* 499                   AutoNation
+* Name: company, dtype: object
+
+- Para especificar un sector de posición, podemos aprovechar el mismo acceso directo que usamos con las etiquetas. Así es como seleccionaríamos las filas entre las posiciones del índice de una a cuatro (inclusive):
+
+* second_to_sixth_rows = f500[1:5]
+* company  rank  revenues ... employees  total_stockholder_equity
+* 1         State Grid     2    315199 ...    926067                    209456
+* 2      Sinopec Group     3    267518 ...    713288                    106523
+* 3  China National...     4    262573 ...   1512048                    301893
+* 4       Toyota Motor     5    254694 ...    364445                    157210
+
+- En el ejemplo anterior, la fila en la posición del índice 5no está incluida, como si estuviéramos rebanando con una lista de Python o NumPy ndarray. Recordemos que loc[]maneja rebanar de manera diferente:
+
+* Con loc[], se incluye la porción final .
+* Con iloc[], la porción final no está incluida.
+
+- La siguiente tabla resume cómo podemos usar DataFrame.iloc[]y Series.iloc[]seleccionar por posición de entero:
+
+* Seleccionar por posición entera	              Sintaxis explícita	   Convención de taquigrafía
+* Columna única desde el marco de datos	           df.iloc[:,3]	
+* Lista de columnas del marco de datos	        df.iloc[:,[3,5,6]]	
+* Rebanada de columnas de dataframe	             df.iloc[:,3:7]	
+* Una sola fila desde el marco de datos	           df.iloc[20]	
+* Lista de filas del marco de datos	              df.iloc[[0,3,8]]	
+* Rebanada de filas de dataframe	                 df.iloc[3:5]	                df[3:5]
+* Artículos sueltos de la serie.	                  s.iloc[8]	                    s[8]
+* Lista de elementos de la serie	                s.iloc[[2,8,1]]            	s[[2,8,1]]
+* Rebanada de artículos de la serie.	             s.iloc[5:10]	                s[5:10]
+
+- EJERCICIO: Practiquemos usando el DataFrame.iloc[] siguiente.
+1. Seleccione las primeras tres filas del f500marco de datos. Asigna el resultado a first_three_rows.
+2. Seleccione la primera y séptima filas y las primeras cinco columnas del f500marco de datos. Asigna el resultado a first_seventh_row_slice.
+* first_three_rows = f500[:3]
+* first_seventh_row_slice = f500.iloc[[0,6], :5]
+
+# Usando métodos pandas para crear máscaras booleanas. Using pandas methods to create boolean masks
+
+- En el último par de misiones, se utilizó Python operadores booleanos como >, <y ==la creación de máscaras booleanas para seleccionar subconjuntos de datos. También hay una serie de métodos pandas que devuelven máscaras booleanas útiles para explorar datos.
+
+- Dos ejemplos son el Series.isnull()método y el Series.notnull()método . Se pueden usar para seleccionar filas que contengan valores nulos (o NaN) o filas que no contengan valores nulos para una columna determinada.
+
+- Primero, usemos el Series.isnull()método para ver las filas con valores nulos en la revenue_changecolumna:
+
+* rev_is_null = f500["revenue_change"].isnull()
+* print(rev_is_null.head())
+* 0    False
+* 1    False
+* 2    False
+* 3    False
+* 4    False
+* Name: revenue_change, dtype: bool
+
+- Vemos que el Series.isnull()resultado resultó en una serie booleana. Al igual que en NumPy, podemos usar esta serie para filtrar nuestro marco de datos f500:
+
+* rev_change_null = f500[rev_is_null]
+* print(rev_change_null[["company","country","sector"]])
+* _`                       company  country      sector
+* 90                       Uniper  Germany      Energy
+* 180  Hewlett Packard Enterprise      USA  Technology 
+
+- Podemos confirmar que las dos compañías con valores faltantes para la revenue_changecolumna son Uniper, una compañía de energía alemana, y Hewlett Parkard Enterprise, una compañía de tecnología estadounidense. Usemos lo que hemos aprendido para encontrar los valores nulos en la previous_rankcolumna siguiente.
+
+- EJERCICIO: Utilice el Series.isnull()método para seleccionar todas las filas f500que tengan un valor nulo para la previous_rankcolumna. Seleccionar sólo los company, ranky previous_rankcolumnas. Asigna el resultado a null_previous_rank.
+
+* null_previous_rank = f500[f500["previous_rank"].isnull()][["company","rank", "previous_rank"]]
+
+
+
+
 # 6. Data Cleaning Basics
 
 # 7. Guiaded Proyect: Exploring Ebay Car Sales Data
