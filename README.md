@@ -1632,11 +1632,11 @@ Esta es la forma más convencional de leer en un marco de datos, y es el método
 
 - Podemos confirmar que las dos compañías con valores faltantes para la revenue_changecolumna son Uniper, una compañía de energía alemana, y Hewlett Parkard Enterprise, una compañía de tecnología estadounidense. Usemos lo que hemos aprendido para encontrar los valores nulos en la previous_rankcolumna siguiente.
 
-- EJERCICIO: Utilice el Series.isnull()método para seleccionar todas las filas f500que tengan un valor nulo para la previous_rankcolumna. Seleccionar sólo los company, ranky previous_rankcolumnas. Asigna el resultado a null_previous_rank.
+- EJERCICIO: Utilice el Series.isnull() método para seleccionar todas las filas f500que tengan un valor nulo para la previous_rankcolumna. Seleccionar sólo los company, ranky previous_rankcolumnas. Asigna el resultado a null_previous_rank.
 
 * null_previous_rank = f500[f500["previous_rank"].isnull()][["company","rank", "previous_rank"]]
 
-
+# 
 
 
 # 6. Data Cleaning Basics
