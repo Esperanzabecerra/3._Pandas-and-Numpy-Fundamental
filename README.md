@@ -1383,12 +1383,63 @@ A continuación, usemos la indexación booleana para identificar compañías que
 
 # Creación de nuevas columnas
 
+- Es posible que haya notado que después de asignar valores de NaN, la previous_rankcolumna cambió dtype. Miremos más de cerca:
+
+* print(prev_rank_after)
+* NaN      33
+* 471.0     1
+* 234.0     1
+* 125.0     1
+* 166.0     1
+
+- El índice de la serie que Series.value_counts()produce ahora nos muestra flotantes como en 471.0lugar de enteros. La razón detrás de esto es que pandas usa el tipo de entero NumPy, que no admite valores de NaN. Las pandas heredan este comportamiento, y en los casos en los que intentas asignar un valor de NaN a una columna entera, las pandas convertirán esa columna de forma silenciosa en un dtype flotante. Si está interesado en obtener más información sobre esto, hay una sección específica sobre valores de NaN enteros en la documentación de los pandas. https://pandas.pydata.org/pandas-docs/stable/user_guide/gotchas.html
+
+- Ahora que hemos corregido los datos, vamos a crear la rank_changeserie de nuevo. Esta vez, lo agregaremos a nuestro f500marco de datos como una nueva columna.
+
+- Cuando asignamos un valor o valores a una nueva etiqueta de columna, los pandas crearán una nueva columna en nuestro marco de datos. Por ejemplo, a continuación agregamos una nueva columna a un marco de datos llamado top5_rank_revenue:
+
+* top5_rank_revenue["year_founded"] = 0
+* print(top5_rank_revenue)
+* _                         rank  revenues  year_founded
+* Walmart                      1         0             0
+* State Grid                   2         0             0
+* Sinopec Group                3       999             0
+* China National Petroleum     4         0             0
+* Toyota Motor                 5         0             0
+
+- EJERCICIO: Vamos a crear una rank_changecolumna en nuestro f500 marco de datos a continuación. 
+1. Agregue una nueva columna nombrada rank_changeal f500marco de datos restando los valores en la rankcolumna de los valores en la previous_rankcolumna. 
+2. Utilice el Series.describe()método para devolver una serie de estadísticas descriptivas para la rank_changecolumna. Asigna el resultado a rank_change_desc. 
+3. Después de ejecutar su código, use el inspector de variables para ver cada una de las nuevas variables que creó. Verifique que el valor mínimo de la rank_changecolumna ahora sea mayor que -500.
 
 
+* f500["rank_change"] = f500["previous_rank"] - f500["rank"]
+* rank_change_desc = f500["rank_change"].describe()
 
+# Desafío: Top Performers por país
 
+- Terminaremos esta misión con un reto. Al igual que los desafíos en las misiones anteriores, este desafío está diseñado para ayudarte a practicar las técnicas que has aprendido en esta misión. Hemos brindado algunos consejos, pero si es posible, intente completar el desafío sin ellos.
 
+- En este desafío, calcularemos una estadística o atributo específico de cada uno de los tres países más comunes a partir de nuestro f500marco de datos. Hemos identificado los tres países más comunes utilizando el siguiente código:
 
+* top_3_countries = f500["country"].value_counts().head(3)
+* print(top_3_countries)
+* USA      132
+* China    109
+* Japan     51
+* Name: country, dtype: int64
+
+- Al igual que el DataFrame.head()método, el Series.head()método devuelve los primeros cinco elementos de una serie de forma predeterminada, o un número diferente si proporciona un argumento, como el anterior.
+
+- No se desanime si esto requiere algunos intentos para hacerlo bien. ¡Trabajar con datos es un proceso iterativo!
+
+- EJERCICIO: 1. Cree una serie que industry_usacontenga los recuentos de las dos industrias más comunes para las empresas con sede en los Estados Unidos.
+2. Cree una serie que sector_chinacontenga los recuentos de los tres sectores más comunes para las empresas con sede en China.
+3. Cree un objeto flotante mean_employees_japan, que contenga el número medio (promedio) de empleados para las empresas con sede en Japón
+* top_3_countries = f500["country"].value_counts().head(3)
+* industry_usa = f500["industry"][f500["country"] == "USA"].value_counts().head(2)
+* sector_china = f500["sector"][f500["country"] == "China"].value_counts().head(3)
+* mean_employees_japan = f500["employees"][f500["country"] == "Japan"].mean()
 
 # 5. Exploring Data with Pandas: Intermediate
 
