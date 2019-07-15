@@ -2197,9 +2197,86 @@ object ['13.3"', '15.6"', '15.4"', '14.0"', '12.0"', '11.6"', '17.3"', '10.1"', 
 
 * ['13.3', '15.6', '15.4', '14.0', '12.0', '11.6', '17.3', '10.1', '13.5', '12.5', '13.0', '18.4', '13.9', '12.3', '17.0', '15.0', '14.1', '11.3']
 
+- Vamos a eliminar los caracteres que no son dígitos de la ramcolumna siguiente.
+
+- EJERCICIO: 1. Utilice el Series.str.replace()método para eliminar la subcadena GBde la ramcolumna.
+2. Utilice el Series.unique()método para asignar los valores únicos en la ramcolumna a unique_ram.
+3. Después de ejecutar su código, use el inspector de variables para verificar sus cambios.
+
+* laptops["ram"] = laptops["ram"].str.replace('GB','')
+* unique_ram = laptops["ram"].unique()
+
+# 4. PASO: Convertir columnas a tipos numéricos
+
+- En la última pantalla, usamos el Series.str.replace()método para eliminar los caracteres sin dígitos de las columnas screen_sizey ram. Ahora, podemos convertir (o convertir) las columnas a un dtype numérico .
+
+* 1. Exploracion de datos en la columna   =>  2. Identificar patrones y casos especiales  =>  3. Remover los caracteles que no sean
+* digitos  =>   4. Convertir la columna a dtype numerica =>  5. Renombrar la columna si se requiere
+
+- Para ello, utilizamos el Series.astype()método . Para convertir la columna a un dtype numérico, podemos usar into floatcomo parámetro para el método. Como el intdtype no puede almacenar valores decimales, convertiremos la screen_sizecolumna al floatdtype:
+
+* laptops["screen_size"] = laptops["screen_size"].astype(float)
+* print(laptops["screen_size"].dtype)
+* print(laptops["screen_size"].unique())
 
 
+* float64
+* [13.3, 15.6, 15.4, 14. , 12. , 11.6, 17.3, 10.1, 13.5, 12.5, 13. , 18.4, 13.9, 12.3, 17. , 15. , 14.1, 11.3]
 
+- Nuestra screen_sizecolumna es ahora el float64dtype. Vamos a convertir el dtype de la ramcolumna a numérico a continuación.
+
+- EJERCICIO: 1. Usa el Series.astype() método para cambiar la ramcolumna a un integerdtype.
+2. Utilice el DataFrame.dtypes atributo para obtener una lista de los nombres y tipos de laptops columna del marco de datos. Asigna el resultado a dtypes.
+3. Después de ejecutar su código, use el inspector de variables para ver la dtypes variable y ver los resultados de su código.
+
+* laptops["ram"] = laptops["ram"].str.replace('GB','')
+* laptops["ram"] = laptops["ram"].astype(int)
+* dtypes = laptops.dtypes
+
+# 5. Renombrando columnas
+
+- Ahora que hemos convertido nuestras columnas a dtypes numéricos, el paso final es cambiar el nombre de la columna . Este es un paso opcional y puede ser útil si los valores sin dígitos contienen información que nos ayuda a entender los datos.
+
+* 1. Exploracion de datos en la columna   =>  2. Identificar patrones y casos especiales  =>  3. Remover los caracteles que no sean
+* digitos  =>   4. Convertir la columna a dtype numerica =>  5. Renombrar la columna si se requiere
+
+- En nuestro caso, los caracteres de la cita que eliminamos de la screen_sizecolumna indicaban que el tamaño de la pantalla era en pulgadas. Como recordatorio, aquí están los valores originales:
+
+* ['13.3"', '15.6"', '15.4"', '14.0"', '12.0"', '11.6"', '17.3"', '10.1"', '13.5"', '12.5"', '13.0"', '18.4"', '13.9"', '12.3"', '17.0"', '15.0"', '14.1"', '11.3"']
+
+- Para evitar que perdamos información y nos ayuda a comprender los datos, podemos usar el DataFrame.rename()método para cambiar el nombre de la columna de screen_sizea screen_size_inches.
+
+- A continuación, especificamos el axis=1parámetro para que pandas sepa que queremos cambiar el nombre de las etiquetas en el eje de la columna:
+
+* laptops.rename({"screen_size": "screen_size_inches"}, axis=1, inplace=True)
+* print(laptops.dtypes)
+
+* manufacturer           object
+* model_name             object
+* category               object
+* screen_size_inches    float64
+* screen                 object
+* cpu                    object
+* ram                    object
+* storage                object
+* gpu                    object
+* os                     object
+* os_version             object
+* weight                 object
+* price_euros            object
+* dtype: object
+
+- Tenga en cuenta que podemos usar inplace=Trueo asignar el resultado a la estructura de datos; ambos nos darán los mismos resultados. Vamos a cambiar el nombre de la ramcolumna siguiente y analizar los resultados.
+
+- EJERCICIO: 1. Debido a que los GBcaracteres contenían información útil sobre las unidades (gigabytes) del ram del portátil, use el DataFrame.rename()método para cambiar el nombre de la columna de rama ram_gb.
+2. Utilice el Series.describe()método para devolver una serie de estadísticas descriptivas para la ram_gbcolumna. Asigna el resultado a ram_gb_desc.
+3. Después de ejecutar su código, use el inspector de variables para ver los resultados de su código.
+
+* laptops["ram"] = laptops["ram"].str.replace('GB','').astype(int)
+* laptops.rename({"ram": "ram_gb"}, axis=1, inplace=True)
+* ram_gb_desc = laptops["ram_gb"].describe()
+
+# Extraer valores de cuerdas
 
 
 
