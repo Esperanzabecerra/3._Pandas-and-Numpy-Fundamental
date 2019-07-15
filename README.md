@@ -2040,6 +2040,165 @@ Index(['Manufacturer', 'Model Name', 'Category', 'Screen Size', 'Screen',
        'Operating System Version', 'Weight', 'Price (Euros)'],
       dtype='object')
 
+- No solo podemos usar el atributo para ver las etiquetas de las columnas, sino que también podemos asignar nuevas etiquetas al atributo:
+
+* laptops_test = laptops.copy()
+* laptops_test.columns = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M']
+* print(laptops_test.columns)       Index(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'], dtype='object')
+
+- EJERCICIO: A continuación, usemos el DataFrame.columnsatributo para eliminar los espacios en blanco de los nombres de columna.
+
+1. Elimine cualquier espacio en blanco del inicio y final de cada nombre de columna.
+* Cree una lista vacía nombrada new_columns.
+* Use un bucle for para iterar a través del nombre de cada columna usando el DataFrame.columnsatributo. Dentro del cuerpo del bucle for: * Utilice el str.strip()método para eliminar los espacios en blanco desde el principio y el final de la cadena. * Agregue el nombre de columna actualizado a la new_columnslista.
+* Asigne los nombres de columna actualizados al DataFrame.columnsatributo.
+
+* new_columns= []
+* for c in laptops.columns:
+*     clean_c = c.strip()
+*     new_columns.append(clean_c)
+    
+laptops.columns = new_columns
+
+# Nombres de columnas de limpieza continuados
+
+- En el último ejercicio, eliminamos espacios en blanco de los nombres de las columnas. A continuación se muestra el resultado:
+
+* Index(['Manufacturer', 'Model Name', 'Category', 'Screen Size', 'Screen', 'CPU', 'RAM', 'Storage', 'GPU', 'Operating System', 'Operating System Version', 'Weight', 'Price (Euros)'], dtype='object')
+
+- Sin embargo, las etiquetas de las columnas todavía tienen una variedad de letras mayúsculas y minúsculas, así como paréntesis, lo que hará que sea más difícil trabajar con ellas y leerlas. Terminemos de limpiar nuestras etiquetas de columna por:
+
+* Reemplazo de espacios con guiones bajos.
+* Eliminando caracteres especiales.
+* Haciendo todas las etiquetas en minúsculas.
+* Acortar cualquier nombre de columna larga.
+
+- Podemos crear una función que use métodos de cadena de Python para limpiar nuestras etiquetas de columna, y luego usar nuevamente un bucle para aplicar esa función a cada etiqueta. Veamos un ejemplo:
+
+* def clean_col(col):
+*     col = col.strip()
+*     col = col.replace("(","")
+*     col = col.replace(")","")
+*     col = col.lower()
+*     return col
+
+* new_columns = []
+* for c in laptops.columns:
+*     clean_c = clean_col(c)
+*     new_columns.append(clean_c)
+
+* laptops.columns = new_columns
+* print(laptops.columns)
+
+* Index(['manufacturer', 'model name', 'category', 'screen size', 'screen', 'cpu', 'ram', 'storage', 'gpu', 'operating system', 'operating system version', 'weight', 'price euros'], dtype='object')
+
+1. Definió una función que:
+* Se utilizó el str.strip()método para eliminar los espacios en blanco desde el principio y el final de la cadena.
+* Utiliza el str.replace()método para eliminar paréntesis de la cadena.
+* Utiliza el str.lower()método para hacer la cadena en minúscula.
+* Devuelve la cadena modificada.
+2. Usó un bucle para aplicar la función a cada elemento en el objeto de índice y asignarlo de nuevo al DataFrame.columnsatributo.
+3. Impreso los nuevos valores para el DataFrame.columnsatributo.
+
+
+- EJERCICIO: Usemos esta técnica para limpiar las etiquetas de las columnas en nuestro marco de datos, agregando algunas tareas adicionales de limpieza en el camino.
+
+1. Defina una función que acepte un argumento de cadena y:
+* Elimina cualquier espacio en blanco del inicio y final de la cadena.
+* Reemplaza la subcadena Operating Systemcon la abreviatura os.
+* Reemplaza todos los espacios con guiones bajos.
+* Elimina paréntesis de la cadena.
+* Hace que toda la cadena sea minúscula.
+* Devuelve la cadena modificada.
+2. Use un bucle para aplicar la función a cada elemento en el DataFrame.columnsatributo para el laptopsmarco de datos. Asigne el resultado de nuevo al DataFrame.columnsatributo.
+
+
+* import pandas as pd
+* laptops = pd.read_csv('laptops.csv', encoding='Latin-1')
+
+* def clean_col(col):
+*     col = col.strip()
+*     col = col.replace("Operating System","os")
+*     col = col.replace(" ","_")
+*     col = col.replace("(","")
+*     col = col.replace(")","")
+*     col = col.lower()
+*     return col
+
+* new_columns = []
+* for c in laptops.columns:
+*     clean_c = clean_col(c)
+*     new_columns.append(clean_c)
+    
+* laptops.columns = new_columns
+
+# Convertir columnas de cadena a numérico
+
+Anteriormente observamos que las 13 columnas tienen el tipo objectd type, lo que significa que están almacenadas como cadenas. Veamos las primeras filas de algunas de nuestras columnas:
+
+* print(laptops.iloc[:5,2:5])
+
+* _   category screen_size                              screen
+* 0  Ultrabook       13.3"  IPS Panel Retina Display 2560x1600
+* 1  Ultrabook       13.3"                            1440x900
+* 2   Notebook       15.6"                   Full HD 1920x1080
+* 3  Ultrabook       15.4"  IPS Panel Retina Display 2880x1800
+* 4  Ultrabook       13.3"  IPS Panel Retina Display 2560x1600
+
+- De estas tres columnas, tenemos tres tipos diferentes de datos de texto:
+
+* category: Datos puramente de texto - no hay valores numéricos.
+* screen_size: Datos numéricos almacenados como datos de texto debido al "carácter.
+* screen: Una combinación de datos de texto puro con datos numéricos.
+
+- Debido a que los valores en la screen_sizecolumna se almacenan como datos de texto, no podemos clasificarlos numéricamente. Por ejemplo, si quisiéramos seleccionar computadoras portátiles con pantallas de 15 "o más, no podríamos hacerlo.
+
+- Vamos a convertir la screen_sizecolumna a numérica a continuación. Siempre que convertimos texto a datos numéricos, podemos seguir este flujo de trabajo de limpieza de datos:
+
+* 1. Exploracion de datos en la columna   =>  2. Identificar patrones y casos especiales  =>  3. Remover los caracteles que no sean
+* digitos  =>   4. Convertir la columna a dtype numerica =>  5. Renombrar la columna si se requiere
+
+- 1. PASO: El primer paso es explorar los datos . Una de las mejores maneras de hacer esto es usar el Series.unique()método para ver todos los valores únicos en la columna:
+
+* print(laptops["screen_size"].dtype)
+* print(laptops["screen_size"].unique())
+
+object ['13.3"', '15.6"', '15.4"', '14.0"', '12.0"', '11.6"', '17.3"', '10.1"', '13.5"', '12.5"', '13.0"', '18.4"', '13.9"', '12.3"', '17.0"', '15.0"', '14.1"', '11.3"']
+
+2. PASO: Nuestro siguiente paso es identificar patrones y casos especiales . Podemos observar lo siguiente:
+
+* Todos los valores en esta columna siguen el mismo patrón: una serie de dígitos y caracteres de período, seguidos de un carácter de comillas ( ").
+* No hay casos especiales. Cada valor coincide con el mismo patrón.
+* Tendremos que convertir la columna a un floatdtype, ya que el intdtype no podrá almacenar los valores decimales.
+
+- Identifiquemos los patrones y casos especiales en la ram columna siguiente.
+
+- EJERCICIO: 1. Utilice el Series.unique()método para identificar los valores únicos en la ramcolumna del laptopsmarco de datos. Asigna el resultado a unique_ram.  2. Después de ejecutar su código, use el inspector de variables para ver los valores únicos en la ramcolumna e identificar cualquier patrón.
+
+* unique_ram = laptops["ram"].unique()
+
+# 3. PASO: Eliminar caracteres que no sean dígitos
+
+- En el último ejercicio, identificamos un patrón claro en la ramcolumna: todos los valores son enteros e incluyen el carácter GBal final de la cadena:
+
+* ['8GB' '16GB' '4GB' '2GB' '12GB' '6GB' '32GB' '24GB' '64GB']
+
+- Para convertir las columnas ramy las screen_sizecolumnas a tipos numéricos, primero tendremos que eliminar los caracteres que no sean dígitos .
+
+* 1. Exploracion de datos en la columna   =>  2. Identificar patrones y casos especiales  =>  3. Remover los caracteles que no sean
+* digitos  =>   4. Convertir la columna a dtype numerica =>  5. Renombrar la columna si se requiere
+
+- La biblioteca de pandas contiene docenas de métodos de cadenas vectorizadas que podemos usar para manipular datos de texto, muchos de los cuales realizan las mismas operaciones que los métodos de cadenas de Python. La mayoría de los métodos de cadena vectorizada están disponibles usando el elemento de Series.stracceso , lo que significa que podemos acceder a ellos agregando strentre el nombre de la serie y el nombre del método:    Series.str.method_name()
+
+- En este caso, podemos usar el Series.str.replace()método , que es una versión vectorizada del str.replace()método Python que usamos en la pantalla anterior, para eliminar todos los caracteres de comillas de cada cadena en la screen_sizecolumna:
+
+* laptops["screen_size"] = laptops["screen_size"].str.replace('"','')
+* print(laptops["screen_size"].unique())
+
+* ['13.3', '15.6', '15.4', '14.0', '12.0', '11.6', '17.3', '10.1', '13.5', '12.5', '13.0', '18.4', '13.9', '12.3', '17.0', '15.0', '14.1', '11.3']
+
+
+
 
 
 
