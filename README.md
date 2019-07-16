@@ -2278,6 +2278,237 @@ object ['13.3"', '15.6"', '15.4"', '14.0"', '12.0"', '11.6"', '17.3"', '10.1"', 
 
 # Extraer valores de cuerdas
 
+- A veces, puede ser útil extraer valores no numéricos desde dentro de las cadenas. Veamos los primeros cinco valores de la gpucolumna (unidad de procesamiento de gráficos):
+
+* print(laptops["gpu"].head())
+* 0    Intel Iris Plus Graphics 640
+* 1          Intel HD Graphics 6000
+* 2           Intel HD Graphics 620
+* 3              AMD Radeon Pro 455
+* 4    Intel Iris Plus Graphics 650
+* Name: gpu, dtype: object
+
+- La información en esta columna parece ser un fabricante (Intel, AMD) seguido de un nombre / número de modelo. Extraigamos al fabricante solo para que podamos encontrar los más comunes.
+
+- Debido a que a cada fabricante le sigue un carácter de espacio en blanco, podemos usar el Series.str.split()método para extraer esta información:
+
+* (laptops["gpu"].head().str.split())
+* 0 [Intel, Iris, Plus, Graphics, 640]
+* 1 [Intel, HD, Graphics, 6000]
+* 2 [Intel, HD, Graphics,  620]
+* 3 [AMD, Radeon, Pro, 455]
+* 4 [Intel, Iris, Plus, Graphics, 650]
+
+- Este método divide cada cadena en el espacio en blanco; el resultado es una serie que contiene listas individuales de Python. También tenga en cuenta que utilizamos paréntesis para encadenar el método en varias líneas, lo que hace que nuestro código sea más fácil de leer.
+
+- Al igual que con las listas y ndarrays, podemos usar la notación de corchetes para acceder a los elementos en cada lista de la serie. Sin embargo, con la serie, utilizamos el elemento de stracceso seguido de [](paréntesis):
+
+* print(laptops["gpu"].head().str.split().str[0])
+
+- Arriba, solíamos 0 seleccionar el primer elemento en cada lista. A continuación se muestra el resultado:
+
+* 0    Intel
+* 1    Intel
+* 2    Intel
+* 3      AMD
+* 4    Intel
+* Name: gpu, dtype: object
+
+- Usemos esta técnica para extraer también al fabricante de la cpu columna. Aquí están las primeras 5 filas de la cpu columna:
+
+* print(laptops["cpu"].head())
+
+* 0          Intel Core i5 2.3GHz
+* 1          Intel Core i5 1.8GHz
+* 2    Intel Core i5 7200U 2.5GHz
+* 3          Intel Core i7 2.7GHz
+* 4          Intel Core i5 3.1GHz
+* Name: cpu, dtype: object
+
+- EJERCICIO: En el código de ejemplo, extrajimos el nombre del fabricante de la gpucolumna y lo asignamos a una nueva columna gpu_manufacturer.
+
+1. Extraiga el nombre del fabricante de la cpu columna. Asígnelo a una nueva columna cpu_manufacturer.
+2. Usa el Series.value_counts() método para encontrar los conteos de cada fabricante en cpu_manufacturer. Asigna el resultado a cpu_manufacturer_counts.
+
+* laptops["gpu_manufacturer"] = (laptops["gpu"].str.split().str[0])
+* laptops["cpu_manufacturer"] = (laptops["cpu"].str.split().str[0])
+* cpu_manufacturer_counts = laptops["cpu_manufacturer"].value_counts()
+
+# Corrigiendo malos valores
+
+- Si sus datos han sido raspados de una página web o si hubo un ingreso manual de datos involucrado en algún momento, puede terminar con valores inconsistentes. Veamos un ejemplo de nuestra oscolumna:
+
+* print(laptops["os"].value_counts())
+
+* Windows      1125
+* No OS          66
+* Linux          62
+* Chrome OS      27
+* macOS          13
+* Mac OS          8
+* Android         2
+* Name: os, dtype: int64
+
+- Podemos ver que hay dos variaciones del sistema operativo de Apple, macOS, en nuestro conjunto de datos: Mac OSy macOS. Una forma en que podemos arreglar esto es con el Series.map()método . El Series.map()método es ideal cuando queremos cambiar varios valores en una columna, pero lo usaremos ahora como una oportunidad para aprender cómo funciona el método.
+
+- La forma más común de usar Series.map()es con un diccionario. Veamos un ejemplo usando una serie de frutas mal escritas:
+
+* print(s)
+* 0       pair
+* 1     oranje
+* 2    bananna
+* 3     oranje
+* 4     oranje
+* 5     oranje
+* dtype: object
+
+- Crearemos un diccionario llamado correctionsy pasaremos ese diccionario como un argumento a Series.map():
+
+* corrections = {"pair": "pear","oranje": "orange","bananna": "banana"}
+* s = s.map(corrections)
+* print(s)
+
+* 0       pear
+* 1     orange
+* 2     banana
+* 3     orange
+* 4     orange
+* 5     orange
+* dtype: object
+
+- Podemos ver que cada una de nuestras correcciones se hizo a través de nuestra serie. Una cosa importante para recordar Series.map()es que si un valor de su serie no existe como clave en su diccionario, convertirá ese valor a NaN. Veamos que pasa cuando ejecutamos el mapa una vez más:
+
+* s = s.map(corrections)
+* print(s)
+* 0    NaN
+* 1    NaN
+* 2    NaN
+* 3    NaN
+* 4    NaN
+* 5    NaN
+* dtype: object
+
+- Debido a que ninguno de los valores corregidos en nuestra serie existían como claves en nuestro diccionario, ¡todos los valores se convirtieron NaN! Es una ocurrencia muy común, especialmente cuando se trabaja en el cuaderno Jupyter, donde puede volver a ejecutar celdas fácilmente. Vamos a usar Series.map()para limpiar los valores en la oscolumna.
+
+- EJERCICIO: Hemos creado un diccionario para que lo uses con el mapeo. Tenga en cuenta que hemos incluido la ortografía correcta e incorrecta de macOS como claves, de lo contrario terminaremos con valores nulos.
+
+1. Utilice el Series.map()método con el mapping_dictdiccionario para corregir los valores en la oscolumna.
+
+* mapping_dict = {'Android': 'Android','Chrome OS': 'Chrome OS','Linux': 'Linux','Mac OS': 'macOS','No OS': 'No OS','Windows': 'Windows','macOS': 'macOS'}
+* laptops["os"] = laptops["os"].map(mapping_dict)
+
+# Bajando valores perdidos
+
+- En misiones anteriores, hemos hablado brevemente acerca de los valores perdidos y cómo tanto NumPy como los pandas los representan como valores nulos. En pandas, los valores nulos se indicarán con NaNo None.
+
+- Recuerde que podemos usar el DataFrame.isnull()método para identificar valores faltantes, que devuelve un marco de datos booleano. Luego podemos usar el DataFrame.sum()método para contar los Truevalores de cada columna:
+
+* print(laptops.isnull().sum())
+
+* manufacturer            0
+* model_name              0
+* category                0
+* screen_size_inches      0
+* screen                  0
+* cpu                     0
+* ram_gb                  0
+* storage                 0
+* gpu                     0
+* os                      0
+* os_version            170
+* weight_kg               0
+* price_euros             0
+* cpu_manufacturer        0
+* screen_resolution       0
+* cpu_speed               0
+* dtype: int64
+
+- Ahora está claro que solo tenemos una columna con valores nulos os_version, que tiene 170 valores faltantes.
+
+- Hay algunas opciones para manejar los valores perdidos:
+
+* Elimina las filas que tengan valores perdidos.
+* Eliminar cualquier columna que tenga valores perdidos.
+* Rellene los valores faltantes con algún otro valor.
+* Deje los valores que faltan como están.
+
+- Las primeras dos opciones a menudo se usan para preparar datos para algoritmos de aprendizaje automático, que no pueden usarse con datos que incluyen valores nulos. Podemos usar el DataFrame.dropna() método para eliminar o eliminar filas y columnas con valores nulos.
+
+- El DataFrame.dropna() método acepta un axisparámetro, que indica si queremos soltar a lo largo de la columna o del eje de índice. Veamos un ejemplo:
+
+* print(df)   APARECE NaN EN LA COLUMNA C FILA x,z HAY 4 COLUMNAS A,B,C,D Y 4 FILAS w,x,y,z
+
+- El valor predeterminado para el axisparámetro es 0, por lo que df.dropna()devuelve un resultado idéntico a df.dropna(axis=0):
+
+* print(df.dropna())      ELIMINA LAS DOS FILAS x,z QUEDAN LAS 4 COLUMNAS A,B,C,D Y 2 FILAS w,y
+
+- Las filas con etiquetas xy zcontienen valores nulos, por lo que esas filas se eliminan. Veamos qué sucede cuando usamos axis=1 para especificar el eje de columna:
+
+* print(df.dropna(axis=1)) ELIMINA LA COLUMNA C Y QUEDAN LOS DEMAS DATOS IGUALES
+
+- Solo la columna con etiqueta Ccontiene valores nulos, por lo que, en este caso, solo se elimina una columna. Practiquemos usando DataFrame.dropna()para eliminar filas y columnas. 
+
+- EJERCICIO: 1. Se usa DataFrame.dropna() para eliminar cualquier fila del marco de datos de las computadoras portátiles que tienen valores nulos. Asigna el resultado a laptops_no_null_rows.
+2. Se usa DataFrame.dropna() para eliminar columnas del marco de datos de las computadoras portátiles que tienen valores nulos. Asigna el resultado a laptops_no_null_cols.
+
+* laptops_no_null_rows = laptops.dropna(axis=0)
+* laptops_no_null_cols = laptops.dropna(axis=1)
+
+# Relleno de valores perdidos
+
+- Si bien eliminar filas o columnas es el enfoque más fácil para lidiar con los valores faltantes, puede que no siempre sea el mejor enfoque. Por ejemplo, eliminar una cantidad desproporcionada de las computadoras portátiles de un fabricante podría cambiar nuestro análisis.
+
+- Debido a esto, es una buena idea explorar los valores faltantes en la os_versioncolumna antes de tomar una decisión. Podemos usar Series.value_counts()para explorar todos los valores en la columna, pero usaremos un parámetro que no hemos visto antes:
+
+* print(laptops["os_version"].value_counts(dropna=False))
+
+* 10      1072
+* NaN      170
+* 7         45
+* X          8
+* 10 S       8
+* Name: os_version, dtype: int64
+
+- Como establecimos el dropnaparámetro en False, el resultado incluye valores nulos. Podemos ver que la mayoría de los valores en la columna son 10y los valores faltantes son los siguientes más comunes.
+
+- También exploremos la oscolumna, ya que está estrechamente relacionada con la os_versioncolumna. Solo veremos las filas en las que os_versionfalta:
+
+* os_with_null_v = laptops.loc[laptops["os_version"].isnull(),"os"]
+* print(os_with_null_v.value_counts())
+
+* No OS        66
+* Linux        62
+* Chrome OS    27
+* macOS        13
+* Android       2
+* Name: os, dtype: int64
+
+- Inmediatamente, podemos observar algunas cosas:
+
+* El valor más frecuente es "No OS". Es importante tener en cuenta que si no hay un sistema operativo, no debería haber una versión definida en la os_versioncolumna.
+* Trece de las computadoras portátiles que vienen con macOS no especifican la versión. Podemos usar nuestro conocimiento de MacOS para confirmar que os_versiondebe ser igual a X.
+
+- En ambos casos, podemos completar los valores faltantes para que nuestros datos sean más correctos. Para el resto de los valores, probablemente sea mejor dejarlos como desaparecidos para que no eliminemos valores importantes.
+
+- Podemos usar la asignación con una comparación booleana para realizar este reemplazo, como a continuación:
+
+* laptops.loc[laptops["os"] == "macOS", "os_version"] = "X"
+
+- Para filas con No OSvalores, reemplacemos el valor faltante en la os_versioncolumna con el valor Version Unknown.
+
+- EJERCICIO: 
+1. Utilice una matriz booleana para identificar las filas que tienen el valor No OSpara la oscolumna. Luego, use la asignación para asignar el valor Version Unknowna la os_versioncolumna para esas filas.
+2. Usa la siguiente sintaxis para crear la value_counts_aftervariable:
+
+* value_counts_after = laptops.loc[laptops["os_version"].isnull(), "os"].value_counts()
+
+3. Después de ejecutar su código, use el inspector de variables para ver la diferencia entre value_counts_beforey value_counts_after.
+RESPUESTA:
+* value_counts_before = laptops.loc[laptops["os_version"].isnull(), "os"].value_counts()
+* laptops.loc[laptops["os"] == "macOS", "os_version"] = "X"
+* laptops.loc[laptops["os"] == "No OS", "os_version"] = "Version Unknown"
+* value_counts_after = laptops.loc[laptops["os_version"].isnull(), "os"].value_counts()
+
 
 
 
