@@ -2509,11 +2509,42 @@ RESPUESTA:
 * laptops.loc[laptops["os"] == "No OS", "os_version"] = "Version Unknown"
 * value_counts_after = laptops.loc[laptops["os_version"].isnull(), "os"].value_counts()
 
+# Desafío: limpiar una columna de cadena
 
+- ¡Ahora es el momento de practicar lo que hemos aprendido hasta ahora! En este desafío, limpiaremos la weightcolumna. Veamos una muestra de los datos en esa columna:
 
+* print(laptops["weight"].head())
+* 0    1.37kg
+* 1    1.34kg
+* 2    1.86kg
+* 3    1.83kg
+* 4    1.37kg
+* Name: Weight, dtype: object
 
+- Su desafío es convertir los valores en esta columna a valores numéricos. Como recordatorio, aquí está el flujo de trabajo de limpieza de datos que puede utilizar:
 
+* 1. Exploracion de datos en la columna   =>  2. Identificar patrones y casos especiales  =>  3. Remover los caracteles que no sean
+* digitos  =>   4. Convertir la columna a dtype numerica =>  5. Renombrar la columna si se requiere
 
+- Aunque parece que la weight columna podría necesitar sólo los kg caracteres eliminados de la final de cada cadena, hay un caso especial uno de los valores extremos con kgs, por lo que tendrá que eliminar tanto kgy kgs caracteres.
+
+- En el último paso de este desafío, también le pediremos que utilice el DataFrame.to_csv()método para guardar los datos limpios en un archivo CSV. Es una buena idea guardar un archivo CSV cuando finalice la limpieza en caso de que desee realizar un análisis más adelante.
+
+- Podemos usar la siguiente sintaxis para guardar un CSV:
+
+* df.to_csv('filename.csv', index=False)
+
+- De forma predeterminada, los pandas guardarán las etiquetas de índice como una columna en el archivo CSV. Nuestro conjunto de datos tiene etiquetas de enteros que no contienen ningún dato, por lo que no necesitamos guardar el índice.
+
+- No se desanime si este desafío requiere algunos intentos para ser correcto. Trabajar de manera iterativa es una excelente manera de trabajar, y este desafío es más difícil que los ejercicios que ha completado anteriormente. Hemos incluido algunos consejos adicionales, pero le recomendamos que intente sin los consejos primero; ¡Úsalos solo si los necesitas!
+
+- EJERCICIO: 1. Convertir los valores en la weightcolumna a valores numéricos.
+2. Renombra la weightcolumna a weight_kg.
+3. Utilice el DataFrame.to_csv()método para guardar el marco de datos de las computadoras portátiles en un archivo CSV laptops_cleaned.csv sin etiquetas de índice.
+
+* laptops["weight"] = laptops["weight"].str.replace("kgs","").str.replace("kg","").astype(float)
+* laptops.rename({"weight": "weight_kg"}, axis=1, inplace=True)
+* laptops.to_csv('laptops_cleaned.csv',index=False)
 
 # 7. Guiaded Proyect: Exploring Ebay Car Sales Data
 
